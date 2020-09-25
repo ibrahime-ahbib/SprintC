@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #pragma warning(disable:4996)
-
+hhh
 typedef enum { FAUX, VRAI } Booleen;
 
 #define LGMOT 35
@@ -13,9 +13,9 @@ typedef enum { FAUX, VRAI } Booleen;
 /*  Indetation                        *
  *  Noms et variables et fonctions    *
  *  Definition types et constantes    *
- *  Définitions fonctions utilitaires *
+ *  DÃ©finitions fonctions utilitaires *
  *  Commentaires                      *
- *  Passages de paramètes             */
+ *  Passages de paramÃ¨tes             */
 
 typedef char Mot[LGMOT + 1];
 
