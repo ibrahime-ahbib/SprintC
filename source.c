@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <locale.h>
 /////////////////////////////////////////////////
 ///	\brief Messages emis par les instructions
 /// 
@@ -15,7 +15,7 @@
 #define MSG_EMBAUCHER "## nouveau travailleur \"%s\" competent pour la specialite \"%s\"\n"
 #define MSG_DEMARCHE "## nouveau client \"%s\"\n"
 #define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n"
-#define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d’heures \"%d\")\n"
+#define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre dâ€™heures \"%d\")\n"
 #define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n"
 #define MSG_PASSE "## une reallocation est requise\n"
 #define MSG_SPECIALITES "## consultation des specialites\n" 
@@ -23,7 +23,7 @@
 #define MSG_TRAVAILLEURS_TOUS "## consultation des travailleurs competents pour chaque specialite\n" 
 #define MSG_CLIENT "## consultation des commandes effectuees par \"%s\"\n" 
 #define MSG_CLIENT_TOUS "## consultation des commandes effectuees par chaque client\n" 
-#define MSG_SUPERVISION "## consultation de l’avancement des commandes\n" 
+#define MSG_SUPERVISION "## consultation de lâ€™avancement des commandes\n" 
 #define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" 
 #define MSG_INTERRUPTION "## fin de programme\n" 
 
@@ -68,7 +68,7 @@ void traite_interruption();
 /// 
 /// \param argc Nombre d'arguments
 /// \param argv Arguments: "echo" permet un retour
-/// à l'écran de ce qu'on écrit via scanf
+/// Ã  l'Ã©cran de ce qu'on Ã©crit via scanf
 /// 
 /// \return Etat du programme
 /// 
@@ -81,10 +81,10 @@ int main(int argc, char* argv[])
 	}
 
 	Mot buffer;
-	while (VRAI)
+	while (VRAI) //Si on a bien echo dans argv, on permet une rÃ©ponse Ã©cran
 	{
 		get_id(buffer);
-		if (strcmp(buffer, "developpe") == 0)
+		if (strcmp(buffer, "developpe") == 0) //comparaison de deux chaines, 0 = les deux chaÃ®nes sont Ã©gaux
 		{
 			traite_developpe();
 			continue;
@@ -160,10 +160,10 @@ int main(int argc, char* argv[])
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction developpe
 /// 
-/// Récupère le nom de la spécialité et son coût
-/// horraire
+/// RÃ©cupÃ¨re le nom de la spÃ©cialitÃ© et son coÃ»t
+/// horaire
 /// 
-/// Affiche ensuite ces résultats
+/// Affiche ensuite ses rÃ©sultats
 /// 
 /////////////////////////////////////////////////  
 void traite_developpe()
@@ -178,9 +178,9 @@ void traite_developpe()
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction spécialités
+///	\brief Traite l'instruction specialtes
 /// 
-/// Affiche la liste de tous les specialités 
+/// Affiche la liste de toutes les specialitÃ©s 
 /// existantes
 /// 
 /////////////////////////////////////////////////  
@@ -192,12 +192,12 @@ void traite_specialites()
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction travailleurs
 /// 
-/// Récupère la spécialité pour lequel afficher
+/// RÃ©cupÃ¨re la spÃ©cialitÃ© pour lequel afficher
 /// ses travailleurs, ou "tous" pour toutes les
-/// spécialités
+/// spÃ©cialitÃ©s
 /// 
 /// Affiche la liste de tous les travailleurs ou
-/// d'une specialité en particulier
+/// d'une specialitÃ© en particulier
 /// 
 ///////////////////////////////////////////////// 
 void traite_travailleurs()
@@ -206,7 +206,7 @@ void traite_travailleurs()
 
 	get_id(nom_specialite);
 
-	if (strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
+	if (strcmp(nom_specialite, "tous") == 0) // Pour toutes les spÃ©cialitÃ©s
 	{
 		printf(MSG_TRAVAILLEURS_TOUS);
 	}
@@ -219,12 +219,12 @@ void traite_travailleurs()
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction client
 /// 
-/// Récupère le nom du client pour lequel afficher
+/// RÃ©cupÃ¨re le nom du client pour lequel afficher
 /// ses commandes, ou "tous" pour tous les
 /// clients
 /// 
 /// Affiche la liste de toutes les commandes 
-/// effectuées par tous les clients ou pour un
+/// effectuÃ©es par tous les clients ou pour un
 /// client en particulier
 /// 
 ///////////////////////////////////////////////// 
@@ -253,17 +253,18 @@ void traite_client()
 ///////////////////////////////////////////////// 
 void traite_supervision()
 {
+	setlocale(LC_ALL, "");
 	printf(MSG_SUPERVISION);
 }
 
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction charge
 /// 
-/// Récupère le nom du travailleur pour lequel on
+/// RÃ©cupÃ¨re le nom du travailleur pour lequel on
 /// veut afficher sa charge de travail
 /// 
 /// Affiche la charge de travail d'un travailleur
-/// donné
+/// donnÃ©
 /// 
 ///////////////////////////////////////////////// 
 void traite_charge()
@@ -278,26 +279,26 @@ void traite_charge()
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction embauche
 /// 
-/// Récupère le nom de celui qui a été embauché 
+/// RÃ©cupÃ¨re le nom de celui qui a Ã©tÃ© embauchÃ© 
 /// ainsi que la specialite dans laquelle il va exercer
 /// 
-/// Affiche son nom et sa spécialité
+/// Affiche son nom et sa spÃ©cialitÃ©
 /// 
 ///////////////////////////////////////////////// 
 void traite_embauche()
 {
-	Mot nom_specialite, nom_embauché;
+	Mot nom_specialite, nom_embauche;
 
-	get_id(nom_embauché);
+	get_id(nom_embauche);
 	get_id(nom_specialite);
 
-	printf(MSG_EMBAUCHER, nom_embauché, nom_specialite);
+	printf(MSG_EMBAUCHER, nom_embauche, nom_specialite);
 }
 
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction demarche
 /// 
-/// Récupère le nom du client entré
+/// RÃ©cupÃ¨re le nom du client entrÃ©
 /// 
 /// Affiche le nom du client
 /// 
@@ -314,10 +315,10 @@ void traite_demarche()
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction commande
 /// 
-/// Récupère le nom de la commande et le client
+/// RÃ©cupÃ¨re le nom de la commande et le client
 /// 
 /// Affiche le nom du client et le nom de la 
-/// à effectuer
+/// Ã  effectuer
 /// 
 ///////////////////////////////////////////////// 
 void traite_commande()
@@ -333,57 +334,56 @@ void traite_commande()
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction tache
 /// 
-/// Récupère le nom de la commande, sa spécialité
+/// RÃ©cupÃ¨re le nom de la commande, sa spÃ©cialitÃ©
 /// et le nombre d'heures pour effectuer la tache
 /// 
-/// Affiche la commande, la spécialité associée
-/// et le nombre d'heures nécessaires pour 
-/// effectuer la tâche de la spécialité
+/// Affiche la commande, la spÃ©cialitÃ© associÃ©e
+/// et le nombre d'heures nÃ©cessaires pour 
+/// effectuer la tÃ¢che de la spÃ©cialitÃ©
 /// 
 ///////////////////////////////////////////////// 
 void traite_tache()
 {
+	setlocale(LC_ALL, ""); //permet de changer la localisation courante du programme afin de permettre une extension de caractÃ¨res
 	Mot nom_specialite, nom_commande;
 
 	get_id(nom_commande);
 	get_id(nom_specialite);
 	int nombre_heures = get_int();
-
+	
 	printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
 }
 
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction progression 
 ///
-/// Récupère le nom de la commande, la spécialité
-/// et le nombre d'heures à ajouter à son 
+/// RÃ©cupÃ¨re le nom de la commande, la spÃ©cialitÃ©
+/// et le nombre d'heures Ã  ajouter Ã  son 
 /// avancement
 /// 
-/// Affiche le nombre d'heure réalisée pour une
-/// spécialité d'une commande en particulier
+/// Affiche le nombre d'heure rÃ©alisÃ©e pour une
+/// spÃ©cialitÃ© d'une commande en particulier
 /// 
 ///////////////////////////////////////////////// 
 void traite_progression()
 {
 	Mot nom_commande, nom_specialite;
-	
+
 	get_id(nom_commande);
 	get_id(nom_specialite);
 	int nombre_heures = get_int();
-
 	printf(MSG_PROGRESSION, nom_commande, nom_specialite, nombre_heures);
 }
 
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction passe
 /// 
-/// Réaffecte la tâche
+/// RÃ©affecte la tÃ¢che
 /// 
 ///////////////////////////////////////////////// 
 void traite_passe()
 {
 	printf(MSG_PASSE);
-
 }
 
 /////////////////////////////////////////////////
@@ -398,9 +398,9 @@ void traite_interruption()
 }
 
 /////////////////////////////////////////////////
-///	\brief Récupérer les entrées de l'utilisateur
+///	\brief RÃ©cupÃ©rer les entrÃ©es de l'utilisateur
 /// 
-/// \param id Le mot entrée
+/// \param id Le mot entrÃ©e
 /// 
 /////////////////////////////////////////////////   
 void get_id(Mot id)
@@ -414,10 +414,10 @@ void get_id(Mot id)
 }
 
 /////////////////////////////////////////////////
-///	\brief Récupérer l'entrée puis le convertir en
+///	\brief RÃ©cupÃ©rer l'entrÃ©e puis le convertir en
 /// entier
 /// 
-/// \return L'entier récupéré
+/// \return L'entier rÃ©cupÃ©rÃ©
 /// 
 /////////////////////////////////////////////////  
 int get_int()
@@ -432,3 +432,4 @@ int get_int()
 
 	return atoi(buffer);
 }
+
