@@ -8,14 +8,3 @@ Commande | Paramètres | Description
 -------- | ---------- | -----------
 `developpe` | Une spécialité et un coût horaire | Affiche la spécialité et son coût horaire
 `interruption` | Aucun | Met fin au programme
-
-```c
-/////////////////////////////////////////////////
-/// \brief 
-///
-/// \param 
-/// \param 
-/// \return 
-///
-/////////////////////////////////////////////////   
-```
