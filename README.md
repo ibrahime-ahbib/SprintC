@@ -36,3 +36,11 @@ int mon_variable = 5;
 ///
 /////////////////////////////////////////////////   
 ```
+
+**Considérer**
+Indetation cohérente                       
+Noms des variables et des fonctions pertinantes
+Définir des types et constantes
+Définir des fonctions utilitaires
+Rédiger des commentaires
+Passage de paramètes réfléchi
