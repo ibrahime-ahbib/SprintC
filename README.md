@@ -14,12 +14,16 @@ else
 }
 ```
 
-```
+```c
 int i;
 for (i = 0; i < 10; ++i) 
 {
     printf("%d", i * i + i);
 }
+```
+
+```c
+int mon_variable = 5;
 ```
 
 ```c
