@@ -1,8 +1,21 @@
 # sprint0
 
-Qu'est-ce qu'elle fait ? Elle gère deux commandes : developpe et interruption mais gère aussi une mauvaise commande.
-Si c'est la commande developpe, elle attend une spécialité et coût horaire.
-La commande interruption n'a pas besoin d'arguments, elle met fin au programme.
+Qu'est-ce qu'elle fait? 
+
+Ce sprint gère deux commandes mais gère aussi les commandes non reconnu.
+
+Commande | Paramètres | Description
+------- | -----------
+`developpe` | Une spécialité et un coût horaire | Affiche la spécialité et son coût horaire
+`interruption` | Aucun | Met fin au programme
 
 ```c
-  //code for coloring
+/////////////////////////////////////////////////
+/// \brief 
+///
+/// \param 
+/// \param 
+/// \return 
+///
+/////////////////////////////////////////////////   
+```
