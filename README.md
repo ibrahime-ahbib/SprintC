@@ -1,5 +1,7 @@
 # SprintC
-Projet d'IAP en langage C. 
+Projet d'IAP en langage C.
+
+***
 
 **Considérer**
 * Indetation cohérente                       
@@ -8,6 +10,8 @@ Projet d'IAP en langage C.
 * Définir des fonctions utilitaires
 * Rédiger des commentaires
 * Passage de paramètes réfléchi
+
+***
 
 **Code style:**
 
