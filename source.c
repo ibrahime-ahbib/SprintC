@@ -12,6 +12,12 @@
 /// 
 /////////////////////////////////////////////////   
 #define MSG_DEVELOPPE "## nouvelle specialite \"%s\" ; cout horaire \"%d\"\n" 
+#define MSG_EMBAUCHER "## nouveau travailleur \"%s\" competent pour la specialite \"%s\"\n"
+#define MSG_DEMARCHE "## nouveau client \"%s\"\n"
+#define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n"
+#define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d'heures \"%d\")\n"
+#define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n"
+#define MSG_PROGPASSE "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n## une reallocation est requise\n"
 #define MSG_SPECIALITES "## consultation des specialites\n" 
 #define MSG_TRAVAILLEURS "## consultation des travailleurs competents pour la specialite \"%s\"\n" 
 #define MSG_TRAVAILLEURS_TOUS "## consultation des travailleurs competents pour chaque specialite\n" 
@@ -20,12 +26,6 @@
 #define MSG_SUPERVISION "## consultation de l'avancement des commandes\n" 
 #define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" 
 #define MSG_INTERRUPTION "## fin de programme\n" 
-#define MSG_COMMANDE "## nouvelle commande \"%s\" par client \"%s\"\n"
-#define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d'heures \"%d\")\n"
-#define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n"
-#define MSG_PROGPASSE "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n## une reallocation est requise\n"
-#define MSG_EMBAUCHER "## nouveau travailleur \"%s\" competent pour la spécialité \"%s\"\n"
-#define MSG_DEMARCHE "## nouveau client \"%s\"\n"
 
 /////////////////////////////////////////////////
 ///	\brief Lexemes
@@ -50,17 +50,17 @@ int get_int();
 
 // Instructions
 void traite_developpe();
-void traite_interruption();
-void traite_specialites();
-void traite_travailleurs();
-void traite_client();
-void traite_supervision();
-void traite_charge();
 void traite_embauche();
 void traite_demarche();
 void traite_progression();
 void traite_commande();
 void traite_tache();
+void traite_specialites();
+void traite_travailleurs();
+void traite_client();
+void traite_supervision();
+void traite_charge();
+void traite_interruption();
 
 /////////////////////////////////////////////////
 ///	\brief Boucle principale
@@ -88,6 +88,32 @@ int main(int argc, char* argv[])
 			traite_developpe();
 			continue;
 		}
+		else if (strcmp(buffer, "embauche") == 0)
+		{
+			traite_embauche();
+			continue;
+		}
+		else if (strcmp(buffer, "demarche") == 0)
+		{
+			traite_demarche();
+			continue;
+		}
+		else if (strcmp(buffer, "commande") == 0)
+		{
+			traite_commande();
+			continue;
+		}
+		else if (strcmp(buffer, "tache") == 0)
+		{
+			traite_tache();
+			continue;
+		}
+		else if (strcmp(buffer, "progression") == 0)
+		{
+			traite_progression();
+			continue;
+		}
+
 		else if (strcmp(buffer, "specialites") == 0)
 		{
 			traite_specialites();
@@ -124,17 +150,6 @@ int main(int argc, char* argv[])
 
 	return 0;
 	system("pause");
-}
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction interruption
-/// 
-/// Met fin au programme
-/// 
-/////////////////////////////////////////////////  
-void traite_interruption()
-{
-	printf(MSG_INTERRUPTION);
 }
 
 /////////////////////////////////////////////////
@@ -325,10 +340,9 @@ void traite_tache()
 {
 	Mot nom_specialite, nom_commande;
 
-	get_id(nom_specialite);
 	get_id(nom_commande);
+	get_id(nom_specialite);
 	int nombre_heures = get_int();
-
 
 	printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
 }
@@ -365,6 +379,16 @@ void traite_progression()
 	}
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction interruption
+/// 
+/// Met fin au programme
+/// 
+/////////////////////////////////////////////////  
+void traite_interruption()
+{
+	printf(MSG_INTERRUPTION);
+}
 
 /////////////////////////////////////////////////
 ///	\brief Récupérer les entrées de l'utilisateur
