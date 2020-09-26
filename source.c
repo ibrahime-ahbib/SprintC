@@ -11,7 +11,14 @@
 ///	\brief Messages emis par les instructions
 /// 
 /////////////////////////////////////////////////   
-#define MSG_DEVELOPPE "## nouvelle specialite \"%s \" ; cout horaire \"%d\"\n" 
+#define MSG_DEVELOPPE "## nouvelle specialite \"%s\" ; cout horaire \"%d\"\n" 
+#define MSG_SPECIALITES "## consultation des specialites\n" 
+#define MSG_TRAVAILLEURS "## consultation des travailleurs competents pour la specialite \"%s\"\n" 
+#define MSG_TRAVAILLEURS_TOUS "## consultation des travailleurs competents pour chaque specialite\n" 
+#define MSG_CLIENT "## consultation des commandes effectuees par \"%s\"\n" 
+#define MSG_CLIENT_TOUS "## consultation des commandes effectuees par chaque client\n" 
+#define MSG_SUPERVISION "## consultation de l'avancement des commandes\n" 
+#define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" 
 #define MSG_INTERRUPTION "## fin de programme\n" 
 
 /////////////////////////////////////////////////
@@ -38,6 +45,11 @@ int get_int();
 // Instructions
 void traite_developpe();
 void traite_interruption();
+void traite_specialites();
+void traite_travailleurs();
+void traite_client();
+void traite_supervision();
+void traite_charge();
 
 /////////////////////////////////////////////////
 ///	\brief Boucle principale
@@ -49,8 +61,10 @@ void traite_interruption();
 /// \return Etat du programme
 /// 
 /////////////////////////////////////////////////   
-int main(int argc, char* argv[]) {
-	if(argc >= 2 && strcmp("echo", argv[1]) == 0) {
+int main(int argc, char* argv[]) 
+{
+	if(argc >= 2 && strcmp("echo", argv[1]) == 0) 
+	{
 		EchoActif = VRAI;
 	}
 
@@ -58,12 +72,37 @@ int main(int argc, char* argv[]) {
 	while(VRAI)
 	{
 		get_id(buffer);
-		if (strcmp(buffer, "developpe") == 0)
+		if(strcmp(buffer, "developpe") == 0)
 		{
 			traite_developpe();
 			continue;
 		}
-		if (strcmp(buffer, "interruption") == 0)
+		else if(strcmp(buffer, "specialites") == 0)
+		{
+			traite_specialites();
+			continue;
+		}
+		else if(strcmp(buffer, "travailleurs") == 0)
+		{
+			traite_travailleurs();
+			continue;
+		}
+		else if(strcmp(buffer, "client") == 0)
+		{
+			traite_client();
+			continue;
+		}
+		else if(strcmp(buffer, "supervision") == 0)
+		{
+			traite_supervision();
+			continue;
+		}
+		else if(strcmp(buffer, "charge") == 0)
+		{
+			traite_charge();
+			continue;
+		}
+		else if(strcmp(buffer, "interruption") == 0)
 		{
 			traite_interruption();
 			break;
@@ -79,7 +118,7 @@ int main(int argc, char* argv[]) {
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction interruption
 /// 
-/// \param Met fin au programme
+/// Met fin au programme
 /// 
 /////////////////////////////////////////////////  
 void traite_interruption()
@@ -103,6 +142,101 @@ void traite_developpe()
 	int cout_horaire = get_int();
 
 	printf(MSG_DEVELOPPE, nom_specialite, cout_horaire);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction spécialités
+/// 
+/// Affiche la liste de tous les specialités 
+/// existantes
+/// 
+/////////////////////////////////////////////////  
+void traite_specialites()
+{
+	printf(MSG_SPECIALITES);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction travailleurs
+/// 
+/// Récupère la spécialité pour lequel afficher
+/// ses travailleurs, ou "tous" pour toutes les
+/// spécialités
+/// 
+/// Affiche la liste de tous les travailleurs ou
+/// d'une specialité en particulier
+/// 
+///////////////////////////////////////////////// 
+void traite_travailleurs()
+{
+	Mot nom_specialite;
+	get_id(nom_specialite);
+	
+	if(strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
+	{
+		printf(MSG_TRAVAILLEURS_TOUS);
+	}
+	else
+	{ 
+		printf(MSG_TRAVAILLEURS, nom_specialite);
+	}
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction client
+/// 
+/// Récupère le nom du client pour lequel afficher
+/// ses commandes, ou "tous" pour tous les
+/// clients
+/// 
+/// Affiche la liste de toutes les commandes 
+/// effectuées par tous les clients ou pour un
+/// client en particulier
+/// 
+///////////////////////////////////////////////// 
+void traite_client()
+{
+	Mot nom_client;
+	get_id(nom_client);
+
+	if (strcmp(nom_client, "tous") == 0) // Pour tous les clients
+	{
+		printf(MSG_CLIENT_TOUS);
+	}
+	else
+	{
+		printf(MSG_CLIENT, nom_client);
+	}
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction supervision
+/// 
+/// Affiche la progression de toutes les 
+/// commandes
+/// 
+///////////////////////////////////////////////// 
+void traite_supervision()
+{
+	printf(MSG_SUPERVISION);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction charge
+/// 
+/// Récupère le nom du travailleur pour lequel on
+/// veut afficher sa charge de travail
+/// 
+/// Affiche la charge de travail d'un travailleur
+/// donné
+/// 
+///////////////////////////////////////////////// 
+void traite_charge()
+{
+	Mot nom_travailleur;
+	get_id(nom_travailleur);
+
+	printf(MSG_CHARGE, nom_travailleur);
 }
 
 /////////////////////////////////////////////////
