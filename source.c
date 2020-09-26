@@ -1,14 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #pragma warning(disable:4996)
-
-typedef enum { FAUX, VRAI } Booleen;
-
-#define LGMOT 35
-#define NBCHIFFREMAX 5
-#define MSG_DEVELOPPE "## Nouvelle specialite \"%s\"; cout horaire \"%d\"\n"
-#define MSG_INTERRUPTION "## Fin de programme\n"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 /*  Indetation                        *
  *  Noms et variables et fonctions    *
@@ -17,18 +10,78 @@ typedef enum { FAUX, VRAI } Booleen;
  *  Commentaires                      *
  *  Passages de paramètes             */
 
+typedef enum { FAUX = 0, VRAI = 1 } Booleen;
+Booleen EchoActif = FAUX;
+
+// Messages emis par les instructions -----------------------------------------
+
+#define MSG_DEVELOPPE "## nouvelle specialite \"%s \" ; cout horaire \"%d\"\n" 
+#define MSG_INTERRUPTION "## fin de programme\n" 
+
+// Lexemes -------------------------------------------------------------------- 
+
+#define LGMOT 35
+#define NBCHIFFREMAX 5 
 typedef char Mot[LGMOT + 1];
 
-int main(int argc, char *argv [])
+void get_id(Mot id) {
+	scanf("%s", id);
+	if (EchoActif) printf(">>echo %s\n", id);
+}
+int get_int() {
+	char buffer[NBCHIFFREMAX + 1];
+	scanf("%s", buffer);
+	if (EchoActif) printf(">>echo %s\n", buffer);
+	return atoi(buffer);
+}
+
+// Instructions --------------------------------------------------------------- 
+
+
+
+// developpe --------------------------- 
+
+void traite_developpe() 
 {
+	Mot nom_specialite;
+	get_id(nom_specialite);
+	int cout_horaire = get_int();
 
-    if (argc > 1 && strcmp(argv[1], "Bonjour") == 0)
-        printf("%s", argv[2]);
+	printf(MSG_DEVELOPPE, nom_specialite, cout_horaire);
+}
 
-    char c[LGMOT];
-    scanf("%s", c);
+// interruption ------------------------ 
 
-    printf("%s", c);
+void traite_interruption() 
+{
+	printf(MSG_INTERRUPTION);
+}
 
-    return 0;
+//Boucle principale ---------------------------------------------------------- 
+
+int main(int argc, char* argv[]) {
+	if (argc >= 2 && strcmp("echo", argv[1]) == 0) {
+		EchoActif = VRAI;
+	}
+
+	Mot buffer;
+	while (VRAI) 
+	{
+		get_id(buffer);
+		if (strcmp(buffer, "developpe") == 0) 
+		{
+			traite_developpe();
+			continue;
+		}
+		if (strcmp(buffer, "interruption") == 0) 
+		{
+			traite_interruption();
+			break;
+		}
+
+		printf("!!! instruction inconnue >%s< !!!\n", buffer);
+	}
+
+	return 0;
+	system("pause");
 }
