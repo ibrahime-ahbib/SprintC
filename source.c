@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	Mot buffer;
-	while (VRAI) 
+	while (VRAI)  
 	{
 		get_id(buffer);
 		if (strcmp(buffer, "developpe") == 0) 
