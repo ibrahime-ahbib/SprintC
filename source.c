@@ -27,7 +27,6 @@
 #define MSG_EMBAUCHER "## nouveau travailleur \"%s\" competent pour la spécialité \"%s\"\n"
 #define MSG_DEMARCHE "## nouveau client \"%s\"\n"
 
-
 /////////////////////////////////////////////////
 ///	\brief Lexemes
 /// 
@@ -73,48 +72,48 @@ void traite_tache();
 /// \return Etat du programme
 /// 
 /////////////////////////////////////////////////   
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
-	if(argc >= 2 && strcmp("echo", argv[1]) == 0) 
+	if (argc >= 2 && strcmp("echo", argv[1]) == 0)
 	{
 		EchoActif = VRAI;
 	}
 
 	Mot buffer;
-	while(VRAI)
+	while (VRAI)
 	{
 		get_id(buffer);
-		if(strcmp(buffer, "developpe") == 0)
+		if (strcmp(buffer, "developpe") == 0)
 		{
 			traite_developpe();
 			continue;
 		}
-		else if(strcmp(buffer, "specialites") == 0)
+		else if (strcmp(buffer, "specialites") == 0)
 		{
 			traite_specialites();
 			continue;
 		}
-		else if(strcmp(buffer, "travailleurs") == 0)
+		else if (strcmp(buffer, "travailleurs") == 0)
 		{
 			traite_travailleurs();
 			continue;
 		}
-		else if(strcmp(buffer, "client") == 0)
+		else if (strcmp(buffer, "client") == 0)
 		{
 			traite_client();
 			continue;
 		}
-		else if(strcmp(buffer, "supervision") == 0)
+		else if (strcmp(buffer, "supervision") == 0)
 		{
 			traite_supervision();
 			continue;
 		}
-		else if(strcmp(buffer, "charge") == 0)
+		else if (strcmp(buffer, "charge") == 0)
 		{
 			traite_charge();
 			continue;
 		}
-		else if(strcmp(buffer, "interruption") == 0)
+		else if (strcmp(buffer, "interruption") == 0)
 		{
 			traite_interruption();
 			break;
@@ -150,7 +149,9 @@ void traite_interruption()
 void traite_developpe()
 {
 	Mot nom_specialite;
+
 	get_id(nom_specialite);
+
 	int cout_horaire = get_int();
 
 	printf(MSG_DEVELOPPE, nom_specialite, cout_horaire);
@@ -182,14 +183,15 @@ void traite_specialites()
 void traite_travailleurs()
 {
 	Mot nom_specialite;
+
 	get_id(nom_specialite);
-	
-	if(strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
+
+	if (strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
 	{
 		printf(MSG_TRAVAILLEURS_TOUS);
 	}
 	else
-	{ 
+	{
 		printf(MSG_TRAVAILLEURS, nom_specialite);
 	}
 }
@@ -209,6 +211,7 @@ void traite_travailleurs()
 void traite_client()
 {
 	Mot nom_client;
+
 	get_id(nom_client);
 
 	if (strcmp(nom_client, "tous") == 0) // Pour tous les clients
@@ -246,6 +249,7 @@ void traite_supervision()
 void traite_charge()
 {
 	Mot nom_travailleur;
+
 	get_id(nom_travailleur);
 
 	printf(MSG_CHARGE, nom_travailleur);
@@ -259,12 +263,11 @@ void traite_charge()
 /// 
 /// Affiche son nom et sa spécialité
 /// 
-/// 
 ///////////////////////////////////////////////// 
 void traite_embauche()
 {
-	Mot nom_specialite;
-	Mot nom_embauché;
+	Mot nom_specialite, nom_embauché;
+
 	get_id(nom_embauché);
 	get_id(nom_specialite);
 
@@ -276,15 +279,15 @@ void traite_embauche()
 /// 
 /// Récupère le nom du client entré
 /// 
-/// 
 /// Affiche le nom du client
-/// 
 /// 
 ///////////////////////////////////////////////// 
 void traite_demarche()
 {
 	Mot nom_client;
+
 	get_id(nom_client);
+
 	printf(MSG_DEMARCHE, nom_client);
 }
 
@@ -293,16 +296,14 @@ void traite_demarche()
 /// 
 /// Récupère le nom de la commande et le client
 /// 
-/// 
-/// Affiche le nom du client et la commande a 
-/// effectuée
+/// Affiche le nom du client et le nom de la 
+/// à effectuer
 /// 
 ///////////////////////////////////////////////// 
 void traite_commande()
 {
-	Mot nom_commande;
-	Mot nom_client;
-	
+	Mot nom_commande, nom_client;
+
 	get_id(nom_commande);
 	get_id(nom_client);
 
@@ -315,48 +316,53 @@ void traite_commande()
 /// Récupère le nom de la commande, sa spécialité
 /// et le nombre d'heures pour effectuer la tache
 /// 
-/// Affiche la commande, la spécialité associé
-/// et le nombre d'heures nécessaire pour effectuer
-/// la tache de la spécialité
+/// Affiche la commande, la spécialité associée
+/// et le nombre d'heures nécessaires pour 
+/// effectuer la tâche de la spécialité
+/// 
 ///////////////////////////////////////////////// 
 void traite_tache()
 {
-	Mot nom_specialite;
+	Mot nom_specialite, nom_commande;
+
 	get_id(nom_specialite);
-	Mot nom_commande;
 	get_id(nom_commande);
 	int nombre_heures = get_int();
-	
+
 
 	printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
 }
 
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction progression 
-///       	ou progression passe
+/// ou progression passe
 ///
-/// Récupère la commande, spécialité et le nombre
-/// d'heures à ajouter à son avancement
+/// Récupère le nom de la commande, la spécialité
+/// et le nombre d'heures à ajouter à son 
+/// avancement
 /// 
-/// Affiche le nombre d'heure à ajouter à l'avancement
-/// d'une commande relier à sa spécialité.
-/// Si "passe" est ajouté,  réaffecte la tache
+/// Affiche le nombre d'heure réalisée pour une
+/// spécialité d'une commande en particulier
+/// Si "passe" est ajouté,  réaffecte la tâche
+/// 
 ///////////////////////////////////////////////// 
 void traite_progression()
 {
-	Mot nom_commande;
+	Mot nom_commande, nom_specialite, passe;
+	
 	get_id(nom_commande);
-	Mot nom_specialite;
 	get_id(nom_specialite);
 	int nombre_heures = get_int();
-	Mot passe_ou_pas;
-	get_id(passe_ou_pas);
+	get_id(passe);
 
-	if (strcmp(passe_ou_pas, "passe") == 0)
+	if (strcmp(passe, "passe") == 0)
+	{
 		printf(MSG_PROGPASSE, nom_commande, nom_specialite, nombre_heures);
+	}
 	else
+	{
 		printf(MSG_PROGRESSION, nom_commande, nom_specialite, nombre_heures);
-
+	}
 }
 
 
@@ -370,7 +376,7 @@ void get_id(Mot id)
 {
 	scanf("%s", id);
 
-	if(EchoActif)
+	if (EchoActif)
 	{
 		printf(">>echo %s\n", id);
 	}
@@ -388,7 +394,7 @@ int get_int()
 	char buffer[NBCHIFFREMAX + 1];
 	scanf("%s", buffer);
 
-	if(EchoActif)
+	if (EchoActif)
 	{
 		printf(">>echo %s\n", buffer);
 	}
