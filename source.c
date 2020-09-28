@@ -38,8 +38,13 @@
 // Lexemes
 /////////////////////////////////////////////////   
 /// \brief Type pour les booléens
-typedef enum { FAUX = 0, VRAI = 1 } Booleen; 
-Booleen EchoActif = FAUX; ///< Si vrai, l'echo est active
+typedef enum
+{
+	FAUX = 0, ///< Valeur fausse
+	VRAI = 1  ///< Valeur vraie
+} Booleen;
+
+Booleen EchoActif = FAUX; ///< Si vrai, l'echo est actif
 
 #define LGMOT 35 ///< La taille maximale d'un mot
 #define NBCHIFFREMAX 5 ///< La taille maximale d'un chiffre
