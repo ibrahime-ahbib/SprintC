@@ -298,7 +298,7 @@ void traite_passe()
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction spécialités.
+///	\brief Traite l'instruction spécialites.
 /// 
 /// Affiche la liste de toutes les specialités 
 /// existantes.
@@ -423,8 +423,8 @@ void get_id(Mot id)
 }
 
 /////////////////////////////////////////////////
-///	\brief Récupérer l'entrée puis le convertir en
-/// entier.
+///	\brief Récupérer l'entrée puis le convertir 
+/// en un entier.
 /// 
 /// \return L'entier récupéré
 /// 
