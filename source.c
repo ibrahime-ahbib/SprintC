@@ -1,46 +1,51 @@
 /////////////////////////////////////////////////
-///	\brief Headers
+/// \file source.c
+/// 
+/// \brief Le sprint 1 du projet.
+/// 
+/// Le but de ce sprint est de créer les 
+/// différents fonctions du programme ainsi 
+/// qu'implémenter un simple affichage des
+/// paramètres donnés à chacuns d'eux.
 ///
 /////////////////////////////////////////////////  
-#pragma warning(disable:4996)
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <locale.h>
-/////////////////////////////////////////////////
-///	\brief Messages emis par les instructions
-/// 
+
+// Headers 
 /////////////////////////////////////////////////   
-#define MSG_DEVELOPPE "## nouvelle specialite \"%s\" ; cout horaire \"%d\"\n" 
-#define MSG_EMBAUCHER "## nouveau travailleur \"%s\" competent pour la specialite \"%s\"\n"
-#define MSG_DEMARCHE "## nouveau client \"%s\"\n"
-#define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n"
-#define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d’heures \"%d\")\n"
-#define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n"
-#define MSG_PASSE "## une reallocation est requise\n"
-#define MSG_SPECIALITES "## consultation des specialites\n" 
-#define MSG_TRAVAILLEURS "## consultation des travailleurs competents pour la specialite \"%s\"\n" 
-#define MSG_TRAVAILLEURS_TOUS "## consultation des travailleurs competents pour chaque specialite\n" 
-#define MSG_CLIENT "## consultation des commandes effectuees par \"%s\"\n" 
-#define MSG_CLIENT_TOUS "## consultation des commandes effectuees par chaque client\n" 
-#define MSG_SUPERVISION "## consultation de l’avancement des commandes\n" 
-#define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" 
-#define MSG_INTERRUPTION "## fin de programme\n" 
+#pragma warning(disable:4996) // Pour désactiver l'erreur concernant scanf
+#include <stdio.h> // Pour l'utilisation de printf et scanf
+#include <stdlib.h> // Pour l'utilisation de atoi
+#include <string.h> // Bibliothèque l'utilisation de strcmp
 
-/////////////////////////////////////////////////
-///	\brief Lexemes
-/// 
+// Messages emis par les instructions
 /////////////////////////////////////////////////   
-typedef enum { FAUX = 0, VRAI = 1 } Booleen;
-Booleen EchoActif = FAUX;
+#define MSG_DEVELOPPE "## nouvelle specialite \"%s\" ; cout horaire \"%d\"\n" ///< Sortie de l'instruction developpe
+#define MSG_EMBAUCHER "## nouveau travailleur \"%s\" competent pour la specialite \"%s\"\n" ///< Sortie de l'instruction embaucher 
+#define MSG_DEMARCHE "## nouveau client \"%s\"\n" ///< Sortie de l'instruction demarche
+#define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n" ///< Sortie de l'instruction commande
+#define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d'heures \"%d\")\n" ///< Sortie de l'instruction tache
+#define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n" ///< Sortie de l'instruction progression
+#define MSG_PASSE "## une reallocation est requise\n" ///< Sortie de l'instruction passe
+#define MSG_SPECIALITES "## consultation des specialites\n" ///< Sortie de l'instruction specialites 
+#define MSG_TRAVAILLEURS "## consultation des travailleurs competents pour la specialite \"%s\"\n" ///< Sortie de l'instruction travailleurs 
+#define MSG_TRAVAILLEURS_TOUS "## consultation des travailleurs competents pour chaque specialite\n" ///< Sortie de l'instruction travailleurs version tous 
+#define MSG_CLIENT "## consultation des commandes effectuees par \"%s\"\n" ///< Sortie de l'instruction client 
+#define MSG_CLIENT_TOUS "## consultation des commandes effectuees par chaque client\n" ///< Sortie de l'instruction client version tous 
+#define MSG_SUPERVISION "## consultation de l'avancement des commandes\n" ///< Sortie de l'instruction superivision 
+#define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" ///< Sortie de l'instruction charge 
+#define MSG_INTERRUPTION "## fin de programme\n" ///< Sortie de l'instruction interruption 
 
-#define LGMOT 35
-#define NBCHIFFREMAX 5 
-typedef char Mot[LGMOT + 1];
+// Lexemes
+/////////////////////////////////////////////////   
+/// \brief Type pour les booléens
+typedef enum { FAUX = 0, VRAI = 1 } Booleen; 
+Booleen EchoActif = FAUX; ///< Si vrai, l'echo est active
 
-/////////////////////////////////////////////////
-///	\brief Prototypes des fonctions
-/// 
+#define LGMOT 35 ///< La taille maximale d'un mot
+#define NBCHIFFREMAX 5 ///< La taille maximale d'un chiffre
+typedef char Mot[LGMOT + 1]; ///< Contient les entrées de l'utilisateur
+
+//	Prototypes des fonctions 
 /////////////////////////////////////////////////
 // Lexemes
 void get_id(Mot id);
@@ -64,7 +69,10 @@ void traite_charge();
 void traite_interruption();
 
 /////////////////////////////////////////////////
-///	\brief Boucle principale
+///	\brief Boucle principale.
+/// 
+/// Gère les instructions entrées par 
+/// l'utilisateur.
 /// 
 /// \param argc Nombre d'arguments
 /// \param argv Arguments: "echo" permet un retour
@@ -80,11 +88,11 @@ int main(int argc, char* argv[])
 		EchoActif = VRAI;
 	}
 
-	Mot buffer;
-	while (VRAI) //Si on a bien echo dans argv, on permet une réponse écran
+	Mot buffer; // Les instructions principales
+	while (VRAI)
 	{
 		get_id(buffer);
-		if (strcmp(buffer, "developpe") == 0) //comparaison de deux chaines, 0 = les deux chaînes sont égaux
+		if (strcmp(buffer, "developpe") == 0) // strcmp() compare deux chaines; égaux si 0
 		{
 			traite_developpe();
 			continue;
@@ -158,12 +166,13 @@ int main(int argc, char* argv[])
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction developpe
+///	\brief Traite l'instruction developpe.
 /// 
 /// Récupère le nom de la spécialité et son coût
-/// horaire
+/// horaire.
 /// 
-/// Affiche ensuite ses résultats
+/// Affiche le nom de la spécialité et son coût
+/// horaire.
 /// 
 /////////////////////////////////////////////////  
 void traite_developpe()
@@ -178,10 +187,121 @@ void traite_developpe()
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction specialtes
+///	\brief Traite l'instruction embauche.
+/// 
+/// Récupère le nom du travailleur ainsi que 
+/// la specialite dans laquelle il va exercer.
+/// 
+/// Affiche le nom du travailleur et sa 
+/// spécialité.
+/// 
+///////////////////////////////////////////////// 
+void traite_embauche()
+{
+	Mot nom_specialite, nom_travailleur;
+
+	get_id(nom_travailleur);
+	get_id(nom_specialite);
+
+	printf(MSG_EMBAUCHER, nom_travailleur, nom_specialite);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction demarche.
+/// 
+/// Récupère le nom du client entré.
+/// 
+/// Affiche le nom du client.
+/// 
+///////////////////////////////////////////////// 
+void traite_demarche()
+{
+	Mot nom_client;
+
+	get_id(nom_client);
+
+	printf(MSG_DEMARCHE, nom_client);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction commande.
+/// 
+/// Récupère le nom de la commande et le client.
+/// 
+/// Affiche le nom du client et le nom de la 
+/// à effectuer.
+/// 
+///////////////////////////////////////////////// 
+void traite_commande()
+{
+	Mot nom_commande, nom_client;
+
+	get_id(nom_commande);
+	get_id(nom_client);
+
+	printf(MSG_COMMANDE, nom_commande, nom_client);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction tache.
+/// 
+/// Récupère le nom de la commande, sa spécialité
+/// et le nombre d'heures pour effectuer la tache.
+/// 
+/// Affiche la commande, la spécialité associée
+/// et le nombre d'heures nécessaires pour 
+/// effectuer la tâche de la spécialité.
+/// 
+///////////////////////////////////////////////// 
+void traite_tache()
+{
+	Mot nom_specialite, nom_commande;
+
+	get_id(nom_commande);
+	get_id(nom_specialite);
+	int nombre_heures = get_int();
+
+	printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction progression. 
+///
+/// Récupère le nom de la commande, la spécialité
+/// et le nombre d'heures à ajouter à son 
+/// avancement.
+/// 
+/// Affiche le nombre d'heure réalisée pour une
+/// spécialité d'une commande en particulier.
+/// 
+///////////////////////////////////////////////// 
+void traite_progression()
+{
+	Mot nom_commande, nom_specialite;
+	
+	get_id(nom_commande);
+	get_id(nom_specialite);
+	int nombre_heures = get_int();
+
+	printf(MSG_PROGRESSION, nom_commande, nom_specialite, nombre_heures);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction passe.
+/// 
+/// Réaffecte la tâche.
+/// 
+///////////////////////////////////////////////// 
+void traite_passe()
+{
+	printf(MSG_PASSE);
+}
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction spécialités.
 /// 
 /// Affiche la liste de toutes les specialités 
-/// existantes
+/// existantes.
 /// 
 /////////////////////////////////////////////////  
 void traite_specialites()
@@ -190,14 +310,14 @@ void traite_specialites()
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction travailleurs
+///	\brief Traite l'instruction travailleurs.
 /// 
 /// Récupère la spécialité pour lequel afficher
 /// ses travailleurs, ou "tous" pour toutes les
-/// spécialités
+/// spécialités.
 /// 
 /// Affiche la liste de tous les travailleurs ou
-/// d'une specialité en particulier
+/// d'une specialité en particulier.
 /// 
 ///////////////////////////////////////////////// 
 void traite_travailleurs()
@@ -217,15 +337,15 @@ void traite_travailleurs()
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction client
+///	\brief Traite l'instruction client.
 /// 
 /// Récupère le nom du client pour lequel afficher
 /// ses commandes, ou "tous" pour tous les
-/// clients
+/// clients.
 /// 
 /// Affiche la liste de toutes les commandes 
 /// effectuées par tous les clients ou pour un
-/// client en particulier
+/// client en particulier.
 /// 
 ///////////////////////////////////////////////// 
 void traite_client()
@@ -245,26 +365,25 @@ void traite_client()
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction supervision
+///	\brief Traite l'instruction supervision.
 /// 
 /// Affiche la progression de toutes les 
-/// commandes
+/// commandes.
 /// 
 ///////////////////////////////////////////////// 
 void traite_supervision()
 {
-	setlocale(LC_ALL, "");
 	printf(MSG_SUPERVISION);
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction charge
+///	\brief Traite l'instruction charge.
 /// 
 /// Récupère le nom du travailleur pour lequel on
-/// veut afficher sa charge de travail
+/// veut afficher sa charge de travail.
 /// 
 /// Affiche la charge de travail d'un travailleur
-/// donné
+/// donné.
 /// 
 ///////////////////////////////////////////////// 
 void traite_charge()
@@ -277,119 +396,9 @@ void traite_charge()
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction embauche
+///	\brief Traite l'instruction interruption.
 /// 
-/// Récupère le nom de celui qui a été embauché 
-/// ainsi que la specialite dans laquelle il va exercer
-/// 
-/// Affiche son nom et sa spécialité
-/// 
-///////////////////////////////////////////////// 
-void traite_embauche()
-{
-	Mot nom_specialite, nom_embauche;
-
-	get_id(nom_embauche);
-	get_id(nom_specialite);
-
-	printf(MSG_EMBAUCHER, nom_embauche, nom_specialite);
-}
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction demarche
-/// 
-/// Récupère le nom du client entré
-/// 
-/// Affiche le nom du client
-/// 
-///////////////////////////////////////////////// 
-void traite_demarche()
-{
-	Mot nom_client;
-
-	get_id(nom_client);
-
-	printf(MSG_DEMARCHE, nom_client);
-}
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction commande
-/// 
-/// Récupère le nom de la commande et le client
-/// 
-/// Affiche le nom du client et le nom de la 
-/// à effectuer
-/// 
-///////////////////////////////////////////////// 
-void traite_commande()
-{
-	Mot nom_commande, nom_client;
-
-	get_id(nom_commande);
-	get_id(nom_client);
-
-	printf(MSG_COMMANDE, nom_commande, nom_client);
-}
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction tache
-/// 
-/// Récupère le nom de la commande, sa spécialité
-/// et le nombre d'heures pour effectuer la tache
-/// 
-/// Affiche la commande, la spécialité associée
-/// et le nombre d'heures nécessaires pour 
-/// effectuer la tâche de la spécialité
-/// 
-///////////////////////////////////////////////// 
-void traite_tache()
-{
-	setlocale(LC_ALL, ""); //permet de changer la localisation courante du programme afin de permettre une extension de caractères
-	Mot nom_specialite, nom_commande;
-
-	get_id(nom_commande);
-	get_id(nom_specialite);
-	int nombre_heures = get_int();
-	
-	printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
-}
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction progression 
-///
-/// Récupère le nom de la commande, la spécialité
-/// et le nombre d'heures à ajouter à son 
-/// avancement
-/// 
-/// Affiche le nombre d'heure réalisée pour une
-/// spécialité d'une commande en particulier
-/// 
-///////////////////////////////////////////////// 
-void traite_progression()
-{
-	Mot nom_commande, nom_specialite;
-
-	get_id(nom_commande);
-	get_id(nom_specialite);
-	int nombre_heures = get_int();
-	printf(MSG_PROGRESSION, nom_commande, nom_specialite, nombre_heures);
-}
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction passe
-/// 
-/// Réaffecte la tâche
-/// 
-///////////////////////////////////////////////// 
-void traite_passe()
-{
-	printf(MSG_PASSE);
-}
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction interruption
-/// 
-/// Met fin au programme
+/// Met fin au programme.
 /// 
 /////////////////////////////////////////////////  
 void traite_interruption()
@@ -398,7 +407,7 @@ void traite_interruption()
 }
 
 /////////////////////////////////////////////////
-///	\brief Récupérer les entrées de l'utilisateur
+///	\brief Récupérer les entrées de l'utilisateur.
 /// 
 /// \param id Le mot entrée
 /// 
@@ -415,7 +424,7 @@ void get_id(Mot id)
 
 /////////////////////////////////////////////////
 ///	\brief Récupérer l'entrée puis le convertir en
-/// entier
+/// entier.
 /// 
 /// \return L'entier récupéré
 /// 
@@ -432,4 +441,3 @@ int get_int()
 
 	return atoi(buffer);
 }
-
