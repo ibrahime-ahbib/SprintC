@@ -43,8 +43,8 @@ void get_id(Mot id)
 }
 
 /////////////////////////////////////////////////
-///	\brief Récupérer l'entrée puis le convertir en
-/// entier.
+///	\brief Récupérer l'entrée puis le convertir 
+/// en un entier.
 /// 
 /// \return L'entier récupéré
 /// 
