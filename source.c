@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////
 /// \file source.c
 /// 
-/// \brief Le sprint 1 du projet.
+/// \brief Le sprint 2 du projet.
 /// 
-/// Le but de ce sprint est de créer les 
-/// différents fonctions du programme ainsi 
-/// qu'implémenter un simple affichage des
-/// paramètres donnés à chacuns d'eux.
+/// Le but de ce sprint est de garder en mémoire
+/// les informations des différents entités
+/// et d'afficher leurs informations via les
+/// instructions.
 ///
 /////////////////////////////////////////////////  
 
@@ -50,6 +50,64 @@ Booleen EchoActif = FAUX; ///< Si vrai, l'echo est actif
 #define NBCHIFFREMAX 5 ///< La taille maximale d'un chiffre
 typedef char Mot[LGMOT + 1]; ///< Contient les entrées de l'utilisateur
 
+// Données
+/////////////////////////////////////////////////   
+#define MAX_SPECIALITES 10 ///< La taille maximale de spécialités
+#define MAX_TRAVAILLEURS 50 ///< La taille maximale de travailleurs
+#define MAX_CLIENTS 100 ///< La taille maximale de clients
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant une spécialité.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Mot nom; ///< Nom de la specialité
+	int cout_horaire; ///< Coût horaire de la spécialité
+} Specialite;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant toutes les
+/// specialites.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Specialite tab_specialites[MAX_SPECIALITES]; ///< Tableau contenant toutes les spécialités
+	unsigned int nb_specialites; ///< Nombre de spécialité developpée
+} Specialites;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant un travailleur.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Mot nom; ///< Nom du travailleur
+	Booleen tags_competences[MAX_SPECIALITES]; ///< Tableau pour savoir dans quelle spécialité exerce le travailleur
+} Travailleur;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant tous les
+/// travailleurs.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Travailleur tab_travailleurs[MAX_TRAVAILLEURS]; ///< Tableau contenant tous les travailleurs
+	unsigned int nb_travailleurs; ///< Nombre de travailleur embauché
+} Travailleurs;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant un client.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Mot tab_clients[MAX_CLIENTS]; ///< Tableau contenant tous les clients
+	unsigned int nb_clients; ///< Nombre de client 
+} Clients;
+
 //	Prototypes des fonctions 
 /////////////////////////////////////////////////
 // Lexemes
@@ -59,9 +117,9 @@ int get_int();
 // Utilitaires
 
 // Instructions
-void traite_developpe();
-void traite_embauche();
-void traite_demarche();
+void traite_developpe(Specialites* specialites);
+void traite_embauche(Travailleurs* travailleurs);
+void traite_demarche(Clients* clients);
 void traite_progression();
 void traite_passe();
 void traite_commande();
@@ -93,23 +151,27 @@ int main(int argc, char* argv[])
 		EchoActif = VRAI;
 	}
 
+	Specialites specialites;
+	Travailleurs travailleurs;
+	Clients clients;
+
 	Mot buffer; // Les instructions principales
 	while (VRAI)
 	{
 		get_id(buffer);
 		if (strcmp(buffer, "developpe") == 0) // strcmp() compare deux chaines; égaux si 0
 		{
-			traite_developpe();
+			traite_developpe(&specialites);
 			continue;
 		}
 		else if (strcmp(buffer, "embauche") == 0)
 		{
-			traite_embauche();
+			traite_embauche(&travailleurs);
 			continue;
 		}
 		else if (strcmp(buffer, "demarche") == 0)
 		{
-			traite_demarche();
+			traite_demarche(&clients);
 			continue;
 		}
 		else if (strcmp(buffer, "commande") == 0)
@@ -180,7 +242,7 @@ int main(int argc, char* argv[])
 /// horaire.
 /// 
 /////////////////////////////////////////////////  
-void traite_developpe()
+void traite_developpe(Specialites* specialites)
 {
 	Mot nom_specialite;
 
@@ -188,7 +250,11 @@ void traite_developpe()
 
 	int cout_horaire = get_int();
 
-	printf(MSG_DEVELOPPE, nom_specialite, cout_horaire);
+	Specialite specialite;
+	strncpy(specialite.nom, nom_specialite, LGMOT);
+	specialite.cout_horaire = cout_horaire;
+
+	specialites->tab_specialites[++specialites->nb_specialites] = specialite;
 }
 
 /////////////////////////////////////////////////
@@ -201,7 +267,7 @@ void traite_developpe()
 /// spécialité.
 /// 
 ///////////////////////////////////////////////// 
-void traite_embauche()
+void traite_embauche(Travailleurs* travailleurs)
 {
 	Mot nom_specialite, nom_travailleur;
 
@@ -219,7 +285,7 @@ void traite_embauche()
 /// Affiche le nom du client.
 /// 
 ///////////////////////////////////////////////// 
-void traite_demarche()
+void traite_demarche(Clients* clients)
 {
 	Mot nom_client;
 
@@ -283,7 +349,7 @@ void traite_tache()
 void traite_progression()
 {
 	Mot nom_commande, nom_specialite;
-	
+
 	get_id(nom_commande);
 	get_id(nom_specialite);
 	int nombre_heures = get_int();
