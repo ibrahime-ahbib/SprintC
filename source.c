@@ -27,8 +27,8 @@
 #define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n" ///< Sortie de l'instruction progression
 #define MSG_PASSE "## une reallocation est requise\n" ///< Sortie de l'instruction passe
 #define MSG_SPECIALITES "specialites traitees : \n" ///< Sortie de l'instruction specialites 
-#define MSG_TRAVAILLEURS "la specialite %s peut-être pris en charge par : " ///< Sortie de l'instruction travailleurs 
-#define MSG_TRAVAILLEURS_TOUS "la specialite %s peut etre prise en charge par : " ///< Sortie de l'instruction travailleurs version tous 
+#define MSG_TRAVAILLEURS "la specialite %s peut-être pris en charge par :" ///< Sortie de l'instruction travailleurs 
+#define MSG_TRAVAILLEURS_TOUS "la specialite %s peut etre prise en charge par :" ///< Sortie de l'instruction travailleurs version tous 
 #define MSG_CLIENT "le client %s a commande : " ///< Sortie de l'instruction client 
 #define MSG_CLIENT_TOUS "le client %s a commande : " ///< Sortie de l'instruction client version tous 
 #define MSG_SUPERVISION "## consultation de l'avancement des commandes\n" ///< Sortie de l'instruction superivision 
@@ -397,8 +397,8 @@ void traite_specialites(Specialites* specialites)
 	printf(MSG_SPECIALITES);
 	for (unsigned int i = 0; i < specialites->nb_specialites; ++i)
 	{
-		printf("%s/%d",specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
-		
+		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
+
 		if (i < specialites->nb_specialites - 1)
 		{
 			printf(", ");
@@ -430,7 +430,7 @@ void traite_travailleurs(const Travailleurs* travailleurs, const Specialites* sp
 		for (unsigned int i = 0; i < specialites->nb_specialites; i++)
 		{
 			get_travailleurs(specialites, travailleurs, i);
-			
+
 			printf("\n");
 		}
 	}
@@ -480,7 +480,7 @@ void traite_client(Clients* clients)
 				printf(MSG_CLIENT, nom_client);
 				printf("\n");
 			}
-				
+
 		}
 	}
 }
@@ -543,14 +543,15 @@ unsigned int indice_specialite(const Specialites* specialites, const Mot* nom_sp
 
 void get_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs, unsigned int indice)
 {
-	
-	printf(MSG_TRAVAILLEURS, specialites->tab_specialites[indice].nom);
 
-	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; i++)
+	printf(MSG_TRAVAILLEURS, specialites->tab_specialites[indice].nom);
+	printf(" ");
+
+	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; ++i)
 	{
 		if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
 		{
-			printf(" %s ", travailleurs->tab_travailleurs[i].nom);
+			printf("%s ", travailleurs->tab_travailleurs[i].nom);
 		}
 	}
 }
@@ -590,3 +591,4 @@ int get_int()
 
 	return atoi(buffer);
 }
+
