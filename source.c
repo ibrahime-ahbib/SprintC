@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////
 /// \file source.c
 /// 
-/// \brief Le sprint 1 du projet.
+/// \brief Le sprint 2 du projet.
 /// 
-/// Le but de ce sprint est de créer les 
-/// différents fonctions du programme ainsi 
-/// qu'implémenter un simple affichage des
-/// paramètres donnés à chacuns d'eux.
+/// Le but de ce sprint est de garder en mémoire
+/// les informations des différents entités
+/// et d'afficher leurs informations via les
+/// instructions.
 ///
 /////////////////////////////////////////////////  
 
@@ -15,22 +15,18 @@
 #pragma warning(disable:4996) // Pour désactiver l'erreur concernant scanf
 #include <stdio.h> // Pour l'utilisation de printf et scanf
 #include <stdlib.h> // Pour l'utilisation de atoi
-#include <string.h> // Bibliothèque l'utilisation de strcmp
+#include <string.h> // Pour l'utilisation de strcmp et de strncpy
 
 // Messages emis par les instructions
 /////////////////////////////////////////////////   
-#define MSG_DEVELOPPE "## nouvelle specialite \"%s\" ; cout horaire \"%d\"\n" ///< Sortie de l'instruction developpe
-#define MSG_EMBAUCHER "## nouveau travailleur \"%s\" competent pour la specialite \"%s\"\n" ///< Sortie de l'instruction embaucher 
-#define MSG_DEMARCHE "## nouveau client \"%s\"\n" ///< Sortie de l'instruction demarche
 #define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n" ///< Sortie de l'instruction commande
 #define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d'heures \"%d\")\n" ///< Sortie de l'instruction tache
 #define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n" ///< Sortie de l'instruction progression
 #define MSG_PASSE "## une reallocation est requise\n" ///< Sortie de l'instruction passe
-#define MSG_SPECIALITES "## consultation des specialites\n" ///< Sortie de l'instruction specialites 
-#define MSG_TRAVAILLEURS "## consultation des travailleurs competents pour la specialite \"%s\"\n" ///< Sortie de l'instruction travailleurs 
-#define MSG_TRAVAILLEURS_TOUS "## consultation des travailleurs competents pour chaque specialite\n" ///< Sortie de l'instruction travailleurs version tous 
-#define MSG_CLIENT "## consultation des commandes effectuees par \"%s\"\n" ///< Sortie de l'instruction client 
-#define MSG_CLIENT_TOUS "## consultation des commandes effectuees par chaque client\n" ///< Sortie de l'instruction client version tous 
+#define MSG_SPECIALITES "specialites traitees : " ///< Sortie de l'instruction specialites 
+#define MSG_TRAVAILLEURS "la specialite %s peut etre prise en charge par : " ///< Sortie de l'instruction travailleurs 
+#define MSG_CLIENT "le client %s a commande : " ///< Sortie de l'instruction client 
+#define MSG_CLIENT_TOUS "le client %s a commande : " ///< Sortie de l'instruction client version tous 
 #define MSG_SUPERVISION "## consultation de l'avancement des commandes\n" ///< Sortie de l'instruction superivision 
 #define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" ///< Sortie de l'instruction charge 
 #define MSG_INTERRUPTION "## fin de programme\n" ///< Sortie de l'instruction interruption 
@@ -50,6 +46,64 @@ Booleen EchoActif = FAUX; ///< Si vrai, l'echo est actif
 #define NBCHIFFREMAX 5 ///< La taille maximale d'un chiffre
 typedef char Mot[LGMOT + 1]; ///< Contient les entrées de l'utilisateur
 
+// Données
+/////////////////////////////////////////////////   
+#define MAX_SPECIALITES 10 ///< La taille maximale de spécialités
+#define MAX_TRAVAILLEURS 50 ///< La taille maximale de travailleurs
+#define MAX_CLIENTS 100 ///< La taille maximale de clients
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant une spécialité.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Mot nom; ///< Nom de la specialité
+	int cout_horaire; ///< Coût horaire de la spécialité
+} Specialite;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant toutes les
+/// specialites.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Specialite tab_specialites[MAX_SPECIALITES]; ///< Tableau contenant toutes les spécialités
+	unsigned int nb_specialites; ///< Nombre de spécialité developpée
+} Specialites;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant un travailleur.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Mot nom; ///< Nom du travailleur
+	Booleen tags_competences[MAX_SPECIALITES]; ///< Tableau pour savoir dans quelle spécialité exerce le travailleur
+} Travailleur;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant tous les
+/// travailleurs.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Travailleur tab_travailleurs[MAX_TRAVAILLEURS]; ///< Tableau contenant tous les travailleurs
+	unsigned int nb_travailleurs; ///< Nombre de travailleur embauché
+} Travailleurs;
+
+/////////////////////////////////////////////////
+///	\brief Structure représentant un client.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Mot tab_clients[MAX_CLIENTS]; ///< Tableau contenant tous les clients
+	unsigned int nb_clients; ///< Nombre de client 
+} Clients;
+
 //	Prototypes des fonctions 
 /////////////////////////////////////////////////
 // Lexemes
@@ -57,18 +111,21 @@ void get_id(Mot id);
 int get_int();
 
 // Utilitaires
+unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
+void get_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs, unsigned int indice, Travailleurs* specialistes);
+void print_travailleurs(const Travailleurs* travailleurs, const Mot* nom_specialite);
 
 // Instructions
-void traite_developpe();
-void traite_embauche();
-void traite_demarche();
+void traite_developpe(Specialites* specialites);
+void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs);
+void traite_demarche(Clients* clients);
 void traite_progression();
 void traite_passe();
 void traite_commande();
 void traite_tache();
-void traite_specialites();
-void traite_travailleurs();
-void traite_client();
+void traite_specialites(const Specialites* specialites);
+void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs);
+void traite_client(const Clients* clients);
 void traite_supervision();
 void traite_charge();
 void traite_interruption();
@@ -93,28 +150,37 @@ int main(int argc, char* argv[])
 		EchoActif = VRAI;
 	}
 
+	Specialites specialites;
+	specialites.nb_specialites = 0;
+
+	Travailleurs travailleurs;
+	travailleurs.nb_travailleurs = 0;
+
+	Clients clients;
+	clients.nb_clients = 0;
+
 	Mot buffer; // Les instructions principales
 	while (VRAI)
 	{
 		get_id(buffer);
 		if (strcmp(buffer, "developpe") == 0) // strcmp() compare deux chaines; égaux si 0
 		{
-			traite_developpe();
+			traite_developpe(&specialites);
 			continue;
 		}
 		else if (strcmp(buffer, "embauche") == 0)
 		{
-			traite_embauche();
+			traite_embauche(&specialites, &travailleurs);
 			continue;
 		}
 		else if (strcmp(buffer, "demarche") == 0)
 		{
-			traite_demarche();
+			traite_demarche(&clients);
 			continue;
 		}
 		else if (strcmp(buffer, "commande") == 0)
 		{
-			traite_commande();
+			traite_commande(&clients);
 			continue;
 		}
 		else if (strcmp(buffer, "tache") == 0)
@@ -134,17 +200,17 @@ int main(int argc, char* argv[])
 		}
 		else if (strcmp(buffer, "specialites") == 0)
 		{
-			traite_specialites();
+			traite_specialites(&specialites);
 			continue;
 		}
 		else if (strcmp(buffer, "travailleurs") == 0)
 		{
-			traite_travailleurs();
+			traite_travailleurs(&specialites, &travailleurs);
 			continue;
 		}
 		else if (strcmp(buffer, "client") == 0)
 		{
-			traite_client();
+			traite_client(&clients);
 			continue;
 		}
 		else if (strcmp(buffer, "supervision") == 0)
@@ -176,19 +242,25 @@ int main(int argc, char* argv[])
 /// Récupère le nom de la spécialité et son coût
 /// horaire.
 /// 
-/// Affiche le nom de la spécialité et son coût
-/// horaire.
+/// Garde en mémoire la nouvelle spécialité dans
+/// un tableau.
+/// 
+/// \param specialites Pointeur sur le tableau
+/// contenant toutes les spécialités.
 /// 
 /////////////////////////////////////////////////  
-void traite_developpe()
+void traite_developpe(Specialites* specialites)
 {
 	Mot nom_specialite;
-
 	get_id(nom_specialite);
 
 	int cout_horaire = get_int();
 
-	printf(MSG_DEVELOPPE, nom_specialite, cout_horaire);
+	Specialite specialite;
+	strncpy(specialite.nom, nom_specialite, LGMOT);
+	specialite.cout_horaire = cout_horaire;
+
+	specialites->tab_specialites[specialites->nb_specialites++] = specialite;
 }
 
 /////////////////////////////////////////////////
@@ -197,18 +269,27 @@ void traite_developpe()
 /// Récupère le nom du travailleur ainsi que 
 /// la specialite dans laquelle il va exercer.
 /// 
-/// Affiche le nom du travailleur et sa 
-/// spécialité.
+/// Garde en mémoire le nouveau travailleur
+/// dans un tableau. 
+/// 
+/// \param specialites Pointeur sur le tableau
+/// contenant toutes les spécialités.
+/// \param travailleurs Pointeur sur le tableau
+/// contenant tous les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
-void traite_embauche()
+void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 {
 	Mot nom_specialite, nom_travailleur;
 
 	get_id(nom_travailleur);
 	get_id(nom_specialite);
 
-	printf(MSG_EMBAUCHER, nom_travailleur, nom_specialite);
+	Travailleur travailleur;
+	strncpy(travailleur.nom, nom_travailleur, LGMOT);
+	travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+
+	travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur;
 }
 
 /////////////////////////////////////////////////
@@ -216,16 +297,19 @@ void traite_embauche()
 /// 
 /// Récupère le nom du client entré.
 /// 
-/// Affiche le nom du client.
+/// Garde en mémoire le nouveau client dans un 
+/// tableau.
+/// 
+/// \param clients Pointeur sur le tableau 
+/// contenenant tous les clients.
 /// 
 ///////////////////////////////////////////////// 
-void traite_demarche()
+void traite_demarche(Clients* clients)
 {
 	Mot nom_client;
-
 	get_id(nom_client);
 
-	printf(MSG_DEMARCHE, nom_client);
+	strncpy(clients->tab_clients[clients->nb_clients++], nom_client, LGMOT);
 }
 
 /////////////////////////////////////////////////
@@ -283,9 +367,10 @@ void traite_tache()
 void traite_progression()
 {
 	Mot nom_commande, nom_specialite;
-	
+
 	get_id(nom_commande);
 	get_id(nom_specialite);
+
 	int nombre_heures = get_int();
 
 	printf(MSG_PROGRESSION, nom_commande, nom_specialite, nombre_heures);
@@ -308,10 +393,25 @@ void traite_passe()
 /// Affiche la liste de toutes les specialités 
 /// existantes.
 /// 
+/// \param specialites Pointeur sur le tableau
+/// contenant toutes les spécialités.
+/// 
 /////////////////////////////////////////////////  
-void traite_specialites()
+void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
+
+	for (unsigned int i = 0; i < specialites->nb_specialites; ++i)
+	{
+		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
+
+		if (i < specialites->nb_specialites - 1)
+		{
+			printf(", ");
+		}
+	}
+
+	printf("\n");
 }
 
 /////////////////////////////////////////////////
@@ -321,23 +421,35 @@ void traite_specialites()
 /// ses travailleurs, ou "tous" pour toutes les
 /// spécialités.
 /// 
-/// Affiche la liste de tous les travailleurs ou
-/// d'une specialité en particulier.
+/// Affiche la liste de tous les travailleurs 
+/// existants ou tous les travailleurs d'une 
+/// specialité en particulier.
+/// 
+/// \param specialites Pointeur sur un tableau
+/// contenant toutes les spécialités.
+/// \param travailleurs Pointeur sur un tableau
+/// contenant tous les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
-void traite_travailleurs()
+void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs)
 {
 	Mot nom_specialite;
-
 	get_id(nom_specialite);
 
 	if (strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
 	{
-		printf(MSG_TRAVAILLEURS_TOUS);
+		for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
+		{
+			Travailleurs specialistes;
+			get_travailleurs(specialites, travailleurs, indice, &specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
+			print_travailleurs(&specialistes, &specialites->tab_specialites[indice].nom); // Affiche les travailleurs possédant la spécialité en question
+		}
 	}
 	else
 	{
-		printf(MSG_TRAVAILLEURS, nom_specialite);
+		Travailleurs specialistes;
+		get_travailleurs(specialites, travailleurs, get_indice(specialites, &nom_specialite), &specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
+		print_travailleurs(&specialistes, &nom_specialite); // Affiche les travailleurs possédant la spécialité en question
 	}
 }
 
@@ -352,20 +464,34 @@ void traite_travailleurs()
 /// effectuées par tous les clients ou pour un
 /// client en particulier.
 /// 
+/// \param clients Pointeur sur un tableau 
+/// contenant tous les clients.
+/// 
 ///////////////////////////////////////////////// 
-void traite_client()
+void traite_client(const Clients* clients)
 {
 	Mot nom_client;
-
 	get_id(nom_client);
 
 	if (strcmp(nom_client, "tous") == 0) // Pour tous les clients
 	{
-		printf(MSG_CLIENT_TOUS);
+		for (unsigned int i = 0; i < clients->nb_clients; ++i)
+		{
+			printf(MSG_CLIENT_TOUS, clients->tab_clients[i]);
+			printf("\n");
+		}
 	}
 	else
 	{
-		printf(MSG_CLIENT, nom_client);
+		for (unsigned int i = 0; i < clients->nb_clients; ++i)
+		{
+			if (strcmp(nom_client, clients->tab_clients[i]) == 0)
+			{
+				printf(MSG_CLIENT, nom_client);
+				printf("\n");
+			}
+
+		}
 	}
 }
 
@@ -394,7 +520,6 @@ void traite_supervision()
 void traite_charge()
 {
 	Mot nom_travailleur;
-
 	get_id(nom_travailleur);
 
 	printf(MSG_CHARGE, nom_travailleur);
@@ -409,6 +534,90 @@ void traite_charge()
 void traite_interruption()
 {
 	printf(MSG_INTERRUPTION);
+}
+
+/////////////////////////////////////////////////
+///	\brief Récupérer l'indice d'une spécialité
+/// dans le tableau contenant les spécialités.
+/// 
+/// \param specialites Pointeur sur un tableau
+/// contenant toutes les spécialités.
+/// \param Pointeur sur le nom de la spécialité
+/// pour lequel on veut récuperer l'indice.
+/// 
+///////////////////////////////////////////////// 
+unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite)
+{
+	unsigned int indice;
+	for (indice = 0; indice < specialites->nb_specialites; ++indice)
+	{
+		if (strcmp(specialites->tab_specialites[indice].nom, *nom_specialite) == 0)
+		{
+			break;
+		}
+	}
+
+	return indice;
+}
+
+/////////////////////////////////////////////////
+///	\brief Récupérer les travailleurs d'une
+/// spécialité en particulier.
+/// 
+/// \param[in] specialites Pointeur sur un 
+/// tableau contenant toutes les spécialités.
+/// \param[in] travailleurs Pointeur sur un 
+/// tableau contenant tous les travailleurs.
+/// \param[in] indice L'indice de la spécialité 
+/// pour laquelle on veut récuperer les 
+/// travailleurs.
+/// \param[out] specialistes Pointeur sur un 
+/// tableau à remplir avec les travailleurs 
+/// appartenant à la spécialité indiquée.
+/// 
+///////////////////////////////////////////////// 
+void get_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs, unsigned int indice, Travailleurs* specialistes)
+{
+	specialistes->nb_travailleurs = 0;
+
+	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; ++i)
+	{
+		if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
+		{
+			Travailleur specialiste;
+			strncpy(specialiste.nom, travailleurs->tab_travailleurs[i].nom, LGMOT);
+			specialiste.tags_competences[indice] = VRAI;
+
+			specialistes->tab_travailleurs[specialistes->nb_travailleurs++] = specialiste;
+		}
+	}
+}
+
+/////////////////////////////////////////////////
+///	\brief Afficher tous les travailleurs
+/// contenu dans un tableau.
+/// 
+/// \param travailleurs Pointeur sur un 
+/// tableau contenant des travailleurs.
+/// \param nom_specialite Nom de la spécialité
+/// à laquelle appartiennent les travailleurs.
+/// 
+///////////////////////////////////////////////// 
+void print_travailleurs(const Travailleurs* travailleurs, const Mot* nom_specialite)
+{
+	printf(MSG_TRAVAILLEURS, *nom_specialite);
+
+	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; ++i)
+	{
+		printf("%s", travailleurs->tab_travailleurs[i].nom);
+
+		if (i < travailleurs->nb_travailleurs - 1)
+		{
+			printf(", ");
+		}
+	}
+
+	printf("\n");
 }
 
 /////////////////////////////////////////////////
