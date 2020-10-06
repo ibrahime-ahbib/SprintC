@@ -2,4 +2,4 @@
 
 **Qu'est-ce qu'elle fait?**
 
-Ce sprint gère gère toutes les instructions. Elle récupère des paramètres et affiche ces derniers. Cf/ documentation.
+Le but de ce sprint est de créer les différents fonctions du programme ainsi qu'implémenter un simple affichage des paramètres donnés à chacuns d'eux. Cf/ documentation.
