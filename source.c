@@ -8,7 +8,7 @@
 /// et d'afficher leurs informations via les
 /// instructions.
 ///
-/////////////////////////////////////////////////  
+/////////////////////////////////////////////////
 
 // Headers 
 /////////////////////////////////////////////////   
@@ -104,6 +104,18 @@ typedef struct
 	unsigned int nb_clients; ///< Nombre de client 
 } Clients;
 
+/////////////////////////////////////////////////
+///	\brief Structure possédant un tableau dont 
+/// les éléments pointent sur des travailleurs
+/// qui possèdent une spécialité en particulier.
+/// 
+/////////////////////////////////////////////////  
+typedef struct
+{
+	Travailleur* tab_travailleurs[MAX_TRAVAILLEURS];
+	unsigned int nb_travailleurs;
+} Specialistes;
+
 //	Prototypes des fonctions 
 /////////////////////////////////////////////////
 // Lexemes
@@ -112,8 +124,8 @@ int get_int();
 
 // Utilitaires
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
-void get_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs, unsigned int indice, Travailleurs* specialistes);
-void print_travailleurs(const Travailleurs* travailleurs, const Mot* nom_specialite);
+void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, Specialistes* specialistes, unsigned int indice);
+void print_travailleurs(const Specialistes* travailleurs, const Mot* nom_specialite);
 
 // Instructions
 void traite_developpe(Specialites* specialites);
@@ -124,7 +136,7 @@ void traite_passe();
 void traite_commande();
 void traite_tache();
 void traite_specialites(const Specialites* specialites);
-void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs);
+void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs);
 void traite_client(const Clients* clients);
 void traite_supervision();
 void traite_charge();
@@ -285,11 +297,26 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 	get_id(nom_travailleur);
 	get_id(nom_specialite);
 
-	Travailleur travailleur;
-	strncpy(travailleur.nom, nom_travailleur, LGMOT);
-	travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+	Booleen exist = FAUX;
 
-	travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur;
+	unsigned int i = 0;
+	for (i = 0; i < travailleurs->nb_travailleurs; ++i)
+	{
+		if (strcmp(travailleurs->tab_travailleurs[i].nom, nom_travailleur) == 0)
+		{
+			exist = VRAI;
+			travailleurs->tab_travailleurs[i].tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+		}
+	}
+
+	if (exist == FAUX)
+	{
+		Travailleur travailleur; // Pour plus de lisibilité
+		strncpy(travailleur.nom, nom_travailleur, LGMOT);
+		travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+
+		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur;
+	}
 }
 
 /////////////////////////////////////////////////
@@ -401,7 +428,8 @@ void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
 
-	for (unsigned int i = 0; i < specialites->nb_specialites; ++i)
+	unsigned int i = 0;
+	for (i = 0; i < specialites->nb_specialites; ++i)
 	{
 		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
 
@@ -431,7 +459,7 @@ void traite_specialites(const Specialites* specialites)
 /// contenant tous les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
-void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs)
+void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs)
 {
 	Mot nom_specialite;
 	get_id(nom_specialite);
@@ -440,15 +468,15 @@ void traite_travailleurs(const Specialites* specialites, const Travailleurs* tra
 	{
 		for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
 		{
-			Travailleurs specialistes;
-			get_travailleurs(specialites, travailleurs, indice, &specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
+			Specialistes specialistes;
+			get_travailleurs(specialites, travailleurs, &specialistes, indice); // Remplit le tableau avec les travailleurs possédant la spécialité en question
 			print_travailleurs(&specialistes, &specialites->tab_specialites[indice].nom); // Affiche les travailleurs possédant la spécialité en question
 		}
 	}
 	else
 	{
-		Travailleurs specialistes;
-		get_travailleurs(specialites, travailleurs, get_indice(specialites, &nom_specialite), &specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
+		Specialistes specialistes;
+		get_travailleurs(specialites, travailleurs, &specialistes, get_indice(specialites, &nom_specialite)); // Remplit le tableau avec les travailleurs possédant la spécialité en question
 		print_travailleurs(&specialistes, &nom_specialite); // Affiche les travailleurs possédant la spécialité en question
 	}
 }
@@ -475,7 +503,8 @@ void traite_client(const Clients* clients)
 
 	if (strcmp(nom_client, "tous") == 0) // Pour tous les clients
 	{
-		for (unsigned int i = 0; i < clients->nb_clients; ++i)
+		unsigned int i = 0;
+		for (i = 0; i < clients->nb_clients; ++i)
 		{
 			printf(MSG_CLIENT_TOUS, clients->tab_clients[i]);
 			printf("\n");
@@ -483,14 +512,14 @@ void traite_client(const Clients* clients)
 	}
 	else
 	{
-		for (unsigned int i = 0; i < clients->nb_clients; ++i)
+		unsigned int i = 0;
+		for (i = 0; i < clients->nb_clients; ++i)
 		{
 			if (strcmp(nom_client, clients->tab_clients[i]) == 0)
 			{
 				printf(MSG_CLIENT, nom_client);
 				printf("\n");
 			}
-
 		}
 	}
 }
@@ -576,19 +605,16 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 /// appartenant à la spécialité indiquée.
 /// 
 ///////////////////////////////////////////////// 
-void get_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs, unsigned int indice, Travailleurs* specialistes)
+void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, Specialistes* specialistes, unsigned int indice)
 {
 	specialistes->nb_travailleurs = 0;
 
-	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; ++i)
+	unsigned int i = 0;
+	for (i = 0; i < travailleurs->nb_travailleurs; ++i)
 	{
 		if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
 		{
-			Travailleur specialiste;
-			strncpy(specialiste.nom, travailleurs->tab_travailleurs[i].nom, LGMOT);
-			specialiste.tags_competences[indice] = VRAI;
-
-			specialistes->tab_travailleurs[specialistes->nb_travailleurs++] = specialiste;
+			specialistes->tab_travailleurs[specialistes->nb_travailleurs++] = &travailleurs->tab_travailleurs[i];
 		}
 	}
 }
@@ -603,13 +629,14 @@ void get_travailleurs(const Specialites* specialites, const Travailleurs* travai
 /// à laquelle appartiennent les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
-void print_travailleurs(const Travailleurs* travailleurs, const Mot* nom_specialite)
+void print_travailleurs(const Specialistes* travailleurs, const Mot* nom_specialite)
 {
 	printf(MSG_TRAVAILLEURS, *nom_specialite);
 
-	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; ++i)
+	unsigned int i = 0;
+	for (i = 0; i < travailleurs->nb_travailleurs; ++i)
 	{
-		printf("%s", travailleurs->tab_travailleurs[i].nom);
+		printf("%s", travailleurs->tab_travailleurs[i]->nom);
 
 		if (i < travailleurs->nb_travailleurs - 1)
 		{
