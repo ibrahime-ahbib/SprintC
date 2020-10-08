@@ -6,12 +6,10 @@
 #define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n" ///< Sortie de l'instruction commande
 #define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d'heures \"%d\")\n" ///< Sortie de l'instruction tache
 #define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n" ///< Sortie de l'instruction progression
-//#define MSG_PASSE "## une reallocation est requise\n" ///< Sortie de l'instruction passe
 #define MSG_SPECIALITES "specialites traitees : " ///< Sortie de l'instruction specialites 
 #define MSG_TRAVAILLEURS "la specialite %s peut etre prise en charge par : " ///< Sortie de l'instruction travailleurs 
 #define MSG_CLIENT "le client %s a commande : " ///< Sortie de l'instruction client 
-#define MSG_CLIENT_TOUS "le client %s a commande : " ///< Sortie de l'instruction client version tous 
-#define MSG_SUPERVISION "## consultation de l'avancement des commandes\n" ///< Sortie de l'instruction superivision 
+#define MSG_SUPERVISION "etat des taches pour %s : " ///< Sortie de l'instruction superivision 
 #define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" ///< Sortie de l'instruction charge 
 #define MSG_INTERRUPTION "## fin de programme\n" ///< Sortie de l'instruction interruption 
 
@@ -92,21 +90,22 @@ int get_int();
 
 // Utilitaires
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
-void get_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs, unsigned int indice, Travailleurs_ptr* specialistes);
+void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, const unsigned int indice, Travailleurs_ptr* specialistes);
 void print_travailleurs(const Travailleurs_ptr* travailleurs, const Mot* nom_specialite);
+void print_commandes(const Commandes* commandes, const unsigned int indice);
 
 // Instructions
 void traite_developpe(Specialites* specialites);
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs);
 void traite_demarche(Clients* clients);
-void traite_progression();
+void traite_progression(const Specialites* specialites, Commandes* commandes);
 void traite_passe();
-void traite_commande(Clients* clients, Tache* tache);
-void traite_tache();
+void traite_commande(const Clients* clients, Commandes* commandes);
+void traite_tache(const Specialites* specialites, Commandes* commandes);
 void traite_specialites(const Specialites* specialites);
-void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs);
-void traite_client(const Clients* clients);
-void traite_supervision();
+void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs);
+void traite_client(const Clients* clients, const Commandes* commandes);
+void traite_supervision(const Specialites* specialites, const Commandes* commandes);
 void traite_charge();
 void traite_interruption();
 
@@ -125,10 +124,6 @@ int main(int argc, char* argv[])
 
 	Clients clients;
 	clients.nb_clients = 0;
-
-	Tache tache;
-	tache.nb_heures_effectuees = 0;
-	tache.nb_heures_requises = 0;
 
 	Commandes commandes;
 	commandes.nb_commandes = 0;
@@ -154,24 +149,24 @@ int main(int argc, char* argv[])
 		}
 		else if (strcmp(buffer, "commande") == 0)
 		{
-			traite_commande(&clients, &tache);
+			traite_commande(&clients, &commandes);
 			continue;
 		}
 		else if (strcmp(buffer, "tache") == 0)
 		{
-			traite_tache();
+			traite_tache(&specialites, &commandes);
 			continue;
 		}
 		else if (strcmp(buffer, "progression") == 0)
 		{
-			traite_progression();
+			traite_progression(&specialites, &commandes);
 			continue;
 		}
-		/*else if (strcmp(buffer, "passe") == 0)
+		else if (strcmp(buffer, "passe") == 0)
 		{
 			traite_passe();
 			continue;
-		}*/ 
+		}
 		else if (strcmp(buffer, "specialites") == 0)
 		{
 			traite_specialites(&specialites);
@@ -184,12 +179,12 @@ int main(int argc, char* argv[])
 		}
 		else if (strcmp(buffer, "client") == 0)
 		{
-			traite_client(&clients);
+			traite_client(&clients, &commandes);
 			continue;
 		}
 		else if (strcmp(buffer, "supervision") == 0)
 		{
-			traite_supervision();
+			traite_supervision(&specialites, &commandes);
 			continue;
 		}
 		else if (strcmp(buffer, "charge") == 0)
@@ -250,18 +245,25 @@ void traite_demarche(Clients* clients)
 	strncpy(clients->tab_clients[clients->nb_clients++], nom_client, LGMOT);
 }
 
-void traite_commande(Clients* clients, Tache* tache, Commandes* commandes)
+void traite_commande(const Clients* clients, Commandes* commandes)
 {
 	Mot nom_commande, nom_client;
-	Commande commande;
 
 	get_id(nom_commande);
 	get_id(nom_client);
 
+	Commande commande;
+
+	unsigned int j;
+	for (j = 0; j < MAX_SPECIALITES; ++j)
+	{
+		commande.taches_par_specialite[j].nb_heures_requises = 0;
+	}
+
 	unsigned int i;
 	for (i = 0; i < clients->nb_clients; i++)
 	{
-		if (strcmp(clients->tab_clients[i], nom_client) != 0)
+		if (strcmp(clients->tab_clients[i], nom_client) == 0)
 		{	
 			commande.idx_client = i;
 			break;
@@ -269,38 +271,50 @@ void traite_commande(Clients* clients, Tache* tache, Commandes* commandes)
 	}
 
 	strncpy(commande.nom_commande, nom_commande, LGMOT);
-
 	commandes->tab_commandes[commandes->nb_commandes++] = commande;
-	//printf(MSG_COMMANDE, nom_commande, nom_client);
 }
 
-void traite_tache(Specialites* specialites, Commandes commandes)
+void traite_tache(const Specialites* specialites, Commandes* commandes)
 {
 	Mot nom_specialite, nom_commande;
 
 	get_id(nom_commande);
 	get_id(nom_specialite);
-	int nombre_heures = get_int();
+	
+	int heures_requises = get_int();
 
-
-	//printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
+	unsigned int i;
+	for(i = 0; i < commandes->nb_commandes; ++i)
+	{
+		if(strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
+		{
+			commandes->tab_commandes[i].taches_par_specialite[get_indice(specialites, &nom_specialite)].nb_heures_requises = heures_requises;
+		}
+	}
 }
 
-void traite_progression()
+void traite_progression(const Specialites* specialites, Commandes* commandes)
 {
 	Mot nom_commande, nom_specialite;
 
 	get_id(nom_commande);
 	get_id(nom_specialite);
 
-	int nombre_heures = get_int();
+	int heures_effectuees = get_int();
 
-	printf(MSG_PROGRESSION, nom_commande, nom_specialite, nombre_heures);
-}
+	unsigned int i;
+	for(i = 0; i < commandes->nb_commandes; ++i)
+	{
+		if(strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
+		{
+			commandes->tab_commandes[i].taches_par_specialite[get_indice(specialites, &nom_specialite)].nb_heures_effectuees += heures_effectuees;
+		}
+	}
+} 
 
 void traite_passe()
 {
-	printf(MSG_PASSE);
+	//Pas de traitement d'affichage 
 }
 
 void traite_specialites(const Specialites* specialites)
@@ -320,7 +334,7 @@ void traite_specialites(const Specialites* specialites)
 	printf("\n");
 }
 
-void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs)
+void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs)
 {
 	Mot nom_specialite;
 	get_id(nom_specialite);
@@ -342,7 +356,7 @@ void traite_travailleurs(const Specialites* specialites, const Travailleurs* tra
 	}
 }
 
-void traite_client(const Clients* clients)
+void traite_client(const Clients* clients, const Commandes* commandes)
 {
 	Mot nom_client;
 	get_id(nom_client);
@@ -351,8 +365,8 @@ void traite_client(const Clients* clients)
 	{
 		for (unsigned int i = 0; i < clients->nb_clients; ++i)
 		{
-			printf(MSG_CLIENT_TOUS, clients->tab_clients[i]);
-			printf("\n");
+			printf(MSG_CLIENT, clients->tab_clients[i]);
+			print_commandes(commandes, i);
 		}
 	}
 	else
@@ -362,16 +376,35 @@ void traite_client(const Clients* clients)
 			if (strcmp(nom_client, clients->tab_clients[i]) == 0)
 			{
 				printf(MSG_CLIENT, nom_client);
-				printf("\n");
+				print_commandes(commandes, i);
 			}
-
 		}
 	}
 }
 
-void traite_supervision()
+void traite_supervision(const Specialites* specialites, const Commandes* commandes)
 {
-	printf(MSG_SUPERVISION);
+	unsigned int i = 0;
+	for (i = 0; i < commandes->nb_commandes; ++i)
+	{		
+		printf(MSG_SUPERVISION, commandes->tab_commandes[i].nom_commande);
+
+		unsigned int j = 0;
+		for (j = 0; j < MAX_SPECIALITES; j++)
+		{
+			printf("%s:%d/%d", 
+				specialites->tab_specialites[i].nom, 
+				commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises,
+				commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_effectuees);
+
+			if(j < MAX_SPECIALITES - 1)
+			{
+				printf(", ");
+			}
+		}
+
+		printf("\n");
+	}
 }
 
 void traite_charge()
@@ -401,7 +434,7 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 	return indice;
 }
 
-void get_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs, unsigned int indice, Travailleurs_ptr* specialistes)
+void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, const unsigned int indice, Travailleurs_ptr* specialistes)
 {
 	specialistes->nb_travailleurs = 0;
 
@@ -423,6 +456,25 @@ void print_travailleurs(const Travailleurs_ptr* travailleurs, const Mot* nom_spe
 		printf("%s", travailleurs->tab_travailleurs[i]->nom);
 
 		if (i < travailleurs->nb_travailleurs - 1)
+		{
+			printf(", ");
+		}
+	}
+
+	printf("\n");
+}
+
+void print_commandes(const Commandes* commandes, const unsigned int indice_client)
+{
+	unsigned int i;
+	for(i = 0; i < commandes->nb_commandes; ++i)
+	{
+		if(commandes->tab_commandes[i].idx_client == indice_client)
+		{
+			printf("%s", commandes->tab_commandes[i].nom_commande);
+		}
+
+		if(i < commandes->nb_commandes - 1)
 		{
 			printf(", ");
 		}
