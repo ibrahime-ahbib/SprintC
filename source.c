@@ -2,7 +2,7 @@
 #include <stdio.h> // Pour l'utilisation de printf et scanf
 #include <stdlib.h> // Pour l'utilisation de atoi
 #include <string.h> // Pour l'utilisation de strcmp et de strncpy
- 
+
 #define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n" ///< Sortie de l'instruction commande
 #define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d'heures \"%d\")\n" ///< Sortie de l'instruction tache
 #define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n" ///< Sortie de l'instruction progression
@@ -24,7 +24,7 @@ Booleen EchoActif = FAUX; ///< Si vrai, l'echo est actif
 #define LGMOT 35 ///< La taille maximale d'un mot
 #define NBCHIFFREMAX 5 ///< La taille maximale d'un chiffre
 typedef char Mot[LGMOT + 1]; ///< Contient les entrées de l'utilisateur
- 
+
 #define MAX_SPECIALITES 10 ///< La taille maximale de spécialités
 #define MAX_TRAVAILLEURS 50 ///< La taille maximale de travailleurs
 #define MAX_CLIENTS 100 ///< La taille maximale de clients
@@ -226,17 +226,28 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 	get_id(nom_travailleur);
 	get_id(nom_specialite);
 
-	Travailleur travailleur;
+	Booleen exist = FAUX;
 
-	/*for (unsigned int i = 0; i < travailleurs->nb_travailleurs; i++)
+	unsigned int i = 0;
+	for (i = 0; i < travailleurs->nb_travailleurs; ++i)
 	{
-		if (strcmp(travailleurs->tab_travailleurs[i].nom, nom_specialite) != 0)
-		{*/
-	strncpy(travailleur.nom, nom_travailleur, LGMOT);
+		if (strcmp(travailleurs->tab_travailleurs[i].nom, nom_travailleur) == 0)
+		{
+			exist = VRAI;
+			travailleurs->tab_travailleurs[i].tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+		}
+	}
 
-	travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
-	travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur;
+	if (exist == FAUX)
+	{
+		Travailleur travailleur; // Pour plus de lisibilité
+		strncpy(travailleur.nom, nom_travailleur, LGMOT);
+		travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+
+		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur;
+	}
 }
+
 void traite_demarche(Clients* clients)
 {
 	Mot nom_client;
@@ -258,13 +269,14 @@ void traite_commande(const Clients* clients, Commandes* commandes)
 	for (j = 0; j < MAX_SPECIALITES; ++j)
 	{
 		commande.taches_par_specialite[j].nb_heures_requises = 0;
+		commande.taches_par_specialite[j].nb_heures_effectuees = 0;
 	}
 
 	unsigned int i;
 	for (i = 0; i < clients->nb_clients; i++)
 	{
 		if (strcmp(clients->tab_clients[i], nom_client) == 0)
-		{	
+		{
 			commande.idx_client = i;
 			break;
 		}
@@ -280,18 +292,19 @@ void traite_tache(const Specialites* specialites, Commandes* commandes)
 
 	get_id(nom_commande);
 	get_id(nom_specialite);
-	
+
 	int heures_requises = get_int();
 
 	unsigned int i;
-	for(i = 0; i < commandes->nb_commandes; ++i)
+	for (i = 0; i < commandes->nb_commandes; ++i)
 	{
-		if(strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
+		if (strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
 		{
 			commandes->tab_commandes[i].taches_par_specialite[get_indice(specialites, &nom_specialite)].nb_heures_requises = heures_requises;
 		}
 	}
 }
+
 
 void traite_progression(const Specialites* specialites, Commandes* commandes)
 {
@@ -303,14 +316,14 @@ void traite_progression(const Specialites* specialites, Commandes* commandes)
 	int heures_effectuees = get_int();
 
 	unsigned int i;
-	for(i = 0; i < commandes->nb_commandes; ++i)
+	for (i = 0; i < commandes->nb_commandes; ++i)
 	{
-		if(strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
+		if (strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
 		{
 			commandes->tab_commandes[i].taches_par_specialite[get_indice(specialites, &nom_specialite)].nb_heures_effectuees += heures_effectuees;
 		}
 	}
-} 
+}
 
 void traite_passe()
 {
@@ -382,27 +395,38 @@ void traite_client(const Clients* clients, const Commandes* commandes)
 	}
 }
 
+//Si il y a 0/0, on affiche rien après, si il y a qqch on affiche
+
 void traite_supervision(const Specialites* specialites, const Commandes* commandes)
 {
 	unsigned int i = 0;
 	for (i = 0; i < commandes->nb_commandes; ++i)
-	{		
-		printf(MSG_SUPERVISION, commandes->tab_commandes[i].nom_commande);
+	{
+		if (strlen(specialites->tab_specialites[i].nom) != 0)
+		{
+			printf(MSG_SUPERVISION, commandes->tab_commandes[i].nom_commande);
+		}
 
 		unsigned int j = 0;
 		for (j = 0; j < MAX_SPECIALITES; j++)
 		{
-			printf("%s:%d/%d", 
-				specialites->tab_specialites[i].nom, 
-				commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises,
-				commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_effectuees);
-
-			if(j < MAX_SPECIALITES - 1)
+			if (commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_effectuees != 0 || commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises != 0)
 			{
-				printf(", ");
-			}
-		}
+				printf("%s:%d/%d",
+					specialites->tab_specialites[i].nom,
+					commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_effectuees,
+					commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises);
 
+				if (j < MAX_SPECIALITES - 1)
+				{
+					printf(" ");
+				}
+
+				
+			}
+
+		}
+		
 		printf("\n");
 	}
 }
@@ -467,14 +491,14 @@ void print_travailleurs(const Travailleurs_ptr* travailleurs, const Mot* nom_spe
 void print_commandes(const Commandes* commandes, const unsigned int indice_client)
 {
 	unsigned int i;
-	for(i = 0; i < commandes->nb_commandes; ++i)
+	for (i = 0; i < commandes->nb_commandes; ++i)
 	{
-		if(commandes->tab_commandes[i].idx_client == indice_client)
+		if (commandes->tab_commandes[i].idx_client == indice_client)
 		{
 			printf("%s", commandes->tab_commandes[i].nom_commande);
 		}
 
-		if(i < commandes->nb_commandes - 1)
+		if (i < commandes->nb_commandes - 1)
 		{
 			printf(", ");
 		}
