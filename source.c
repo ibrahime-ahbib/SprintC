@@ -98,7 +98,7 @@ typedef struct
 ///	\brief Structure représentant tous les 
 /// clients.
 /// 
-///////////////////////////////////////////////// 
+/////////////////////////////////////////////////  
 typedef struct
 {
 	Mot tab_clients[MAX_CLIENTS]; ///< Tableau contenant tous les clients
@@ -300,11 +300,11 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 
 	if (exist == FAUX)
 	{
-		Travailleur travailleur; // Pour plus de lisibilité
+		Travailleur travailleur; // Variable temporaire pour plus de lisibilité
 		strncpy(travailleur.nom, nom_travailleur, LGMOT);
 		travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
 
-		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur;
+		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur; // On insère le nouveau travailleur dans le tableau
 	}
 }
 
