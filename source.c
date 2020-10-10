@@ -246,10 +246,10 @@ int main(int argc, char* argv[])
 /// Garde en mémoire la nouvelle spécialité dans
 /// un tableau.
 /// 
-/// \param specialites Pointeur sur le tableau
-/// contenant toutes les spécialités.
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
 /// 
-/////////////////////////////////////////////////  
+/////////////////////////////////////////////////   
 void traite_developpe(Specialites* specialites)
 {
 	Mot nom_specialite;
@@ -273,10 +273,10 @@ void traite_developpe(Specialites* specialites)
 /// Garde en mémoire le nouveau travailleur
 /// dans un tableau. 
 /// 
-/// \param specialites Pointeur sur le tableau
-/// contenant toutes les spécialités.
-/// \param travailleurs Pointeur sur le tableau
-/// contenant tous les travailleurs.
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param travailleurs Pointeur sur la structure
+/// représentant tous les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
@@ -316,8 +316,8 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 /// Garde en mémoire le nouveau client dans un 
 /// tableau.
 /// 
-/// \param clients Pointeur sur le tableau 
-/// contenenant tous les clients.
+/// \param clients Pointeur sur la structure 
+/// représentant tous les clients.
 /// 
 ///////////////////////////////////////////////// 
 void traite_demarche(Clients* clients)
@@ -409,10 +409,10 @@ void traite_passe()
 /// Affiche la liste de toutes les specialités 
 /// existantes.
 /// 
-/// \param specialites Pointeur sur le tableau
-/// contenant toutes les spécialités.
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
 /// 
-/////////////////////////////////////////////////  
+///////////////////////////////////////////////// 
 void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
@@ -442,10 +442,10 @@ void traite_specialites(const Specialites* specialites)
 /// existants ou tous les travailleurs d'une 
 /// specialité en particulier.
 /// 
-/// \param specialites Pointeur sur un tableau
-/// contenant toutes les spécialités.
-/// \param travailleurs Pointeur sur un tableau
-/// contenant tous les travailleurs.
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param travailleurs Pointeur sur la structure
+/// représentant tous les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
 void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs)
@@ -482,8 +482,8 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 /// effectuées par tous les clients ou pour un
 /// client en particulier.
 /// 
-/// \param clients Pointeur sur un tableau 
-/// contenant tous les clients.
+/// \param clients Pointeur sur la structure 
+/// représentant tous les clients.
 /// 
 ///////////////////////////////////////////////// 
 void traite_client(const Clients* clients)
@@ -559,10 +559,11 @@ void traite_interruption()
 ///	\brief Récupérer l'indice d'une spécialité
 /// dans le tableau contenant les spécialités.
 /// 
-/// \param specialites Pointeur sur un tableau
-/// contenant toutes les spécialités.
-/// \param Pointeur sur le nom de la spécialité
-/// pour lequel on veut récuperer l'indice.
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param nom_specialite Pointeur sur le nom de 
+/// la spécialité pour lequel on veut récuperer 
+/// l'indice.
 /// 
 ///////////////////////////////////////////////// 
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite)
@@ -583,16 +584,17 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 ///	\brief Récupérer les travailleurs d'une
 /// spécialité en particulier.
 /// 
-/// \param[in] specialites Pointeur sur un 
-/// tableau contenant toutes les spécialités.
-/// \param[in] travailleurs Pointeur sur un 
-/// tableau contenant tous les travailleurs.
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les spécialités.
+/// \param[in] travailleurs Pointeur sur la 
+/// structure représentant tous les travailleurs.
 /// \param[in] indice L'indice de la spécialité 
 /// pour laquelle on veut récuperer les 
 /// travailleurs.
 /// \param[out] specialistes Pointeur sur un 
-/// tableau à remplir avec les travailleurs 
-/// appartenant à la spécialité indiquée.
+/// tableau à remplir avec des pointeurs sur les 
+/// travailleurs appartenant à la spécialité 
+/// indiquée.
 /// \param[out] nb_specialistes Pointeur sur
 /// le compteur de specialistes.
 /// 
@@ -615,8 +617,11 @@ void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs
 ///	\brief Afficher tous les travailleurs
 /// contenu dans un tableau.
 /// 
-/// \param travailleurs Pointeur sur un 
-/// tableau contenant des travailleurs.
+/// \param specialistes Pointeur sur un tableau
+/// contenant des pointeurs sur les travailleurs
+/// appartenant à la spécialité indiquée.
+/// \param nb_specialistes Pointeur sur le
+/// compteur de specialistes.
 /// \param nom_specialite Nom de la spécialité
 /// à laquelle appartiennent les travailleurs.
 /// 
