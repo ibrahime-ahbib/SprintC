@@ -455,7 +455,7 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 	get_id(nom_specialite);
 
 	Travailleur* specialistes[MAX_TRAVAILLEURS];
-	unsigned int nb_specialistes = 0;
+	unsigned int nb_specialistes;
 
 	if (strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
 	{
