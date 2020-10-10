@@ -585,8 +585,6 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 ///	\brief Récupérer les travailleurs d'une
 /// spécialité en particulier.
 /// 
-/// \param[in] specialites Pointeur sur la 
-/// structure représentant toutes les spécialités.
 /// \param[in] travailleurs Pointeur sur la 
 /// structure représentant tous les travailleurs.
 /// \param[in] indice L'indice de la spécialité 
