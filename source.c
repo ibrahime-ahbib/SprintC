@@ -95,9 +95,10 @@ typedef struct
 } Travailleurs;
 
 /////////////////////////////////////////////////
-///	\brief Structure représentant un client.
+///	\brief Structure représentant tous les 
+/// clients.
 /// 
-/////////////////////////////////////////////////  
+///////////////////////////////////////////////// 
 typedef struct
 {
 	Mot tab_clients[MAX_CLIENTS]; ///< Tableau contenant tous les clients
