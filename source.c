@@ -113,7 +113,7 @@ int get_int();
 
 // Utilitaires
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
-void get_travailleurs(Travailleurs* travailleurs, unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes);
+void get_travailleurs(Travailleurs* travailleurs, const unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes);
 void print_travailleurs(const Travailleur** specialistes, const unsigned int* nb_specialistes, const Mot* nom_specialite);
 
 // Instructions
@@ -598,7 +598,7 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 /// le compteur de specialistes.
 /// 
 ///////////////////////////////////////////////// 
-void get_travailleurs(Travailleurs* travailleurs, unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes)
+void get_travailleurs(Travailleurs* travailleurs, const unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes)
 {
 	*nb_specialistes = 0;
 
