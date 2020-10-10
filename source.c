@@ -48,9 +48,9 @@ typedef char Mot[LGMOT + 1]; ///< Contient les entrées de l'utilisateur
 
 // Données
 /////////////////////////////////////////////////   
-#define MAX_SPECIALITES 10 ///< La taille maximale de spécialités
-#define MAX_TRAVAILLEURS 50 ///< La taille maximale de travailleurs
-#define MAX_CLIENTS 100 ///< La taille maximale de clients
+#define MAX_SPECIALITES 10 ///< Le nombre maximale de spécialités
+#define MAX_TRAVAILLEURS 50 ///< Le nombre maximale de travailleurs
+#define MAX_CLIENTS 100 ///< Le nombre maximale de clients
 
 /////////////////////////////////////////////////
 ///	\brief Structure représentant une spécialité.
