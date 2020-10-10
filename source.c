@@ -1,18 +1,36 @@
+/////////////////////////////////////////////////
+/// \file source.c
+/// 
+/// \brief Le sprint 3 du projet.
+/// 
+/// Le but de ce sprint est de garder en mémoire
+/// les commandes des clients puis d'implémenter 
+/// leur affichage.
+///
+/////////////////////////////////////////////////
+
+// Headers 
+/////////////////////////////////////////////////   
 #pragma warning(disable:4996) // Pour désactiver l'erreur concernant scanf
 #include <stdio.h> // Pour l'utilisation de printf et scanf
 #include <stdlib.h> // Pour l'utilisation de atoi
 #include <string.h> // Pour l'utilisation de strcmp et de strncpy
 
+// Messages emis par les instructions
+/////////////////////////////////////////////////   
 #define MSG_COMMANDE "## nouvelle commande \"%s\", par client \"%s\"\n" ///< Sortie de l'instruction commande
 #define MSG_TACHE "## la commande \"%s\" requiere la specialite \"%s\" (nombre d'heures \"%d\")\n" ///< Sortie de l'instruction tache
 #define MSG_PROGRESSION "## pour la commande \"%s\", pour la specialite \"%s\" : \"%d\" heures de plus ont ete realisees\n" ///< Sortie de l'instruction progression
 #define MSG_SPECIALITES "specialites traitees : " ///< Sortie de l'instruction specialites 
 #define MSG_TRAVAILLEURS "la specialite %s peut etre prise en charge par : " ///< Sortie de l'instruction travailleurs 
 #define MSG_CLIENT "le client %s a commande : " ///< Sortie de l'instruction client 
-#define MSG_SUPERVISION "etat des taches pour %s : " ///< Sortie de l'instruction superivision 
+#define MSG_SUPERVISION "etat des taches pour %s : " ///< Sortie de l'instruction supervision 
 #define MSG_CHARGE "## consultation de la charge de travail de \"%s\"\n" ///< Sortie de l'instruction charge 
 #define MSG_INTERRUPTION "## fin de programme\n" ///< Sortie de l'instruction interruption 
 
+// Lexemes
+/////////////////////////////////////////////////   
+/// \brief Type pour les booléens
 typedef enum
 {
 	FAUX = 0, ///< Valeur fausse
@@ -25,74 +43,106 @@ Booleen EchoActif = FAUX; ///< Si vrai, l'echo est actif
 #define NBCHIFFREMAX 5 ///< La taille maximale d'un chiffre
 typedef char Mot[LGMOT + 1]; ///< Contient les entrées de l'utilisateur
 
-#define MAX_SPECIALITES 10 ///< La taille maximale de spécialités
-#define MAX_TRAVAILLEURS 50 ///< La taille maximale de travailleurs
-#define MAX_CLIENTS 100 ///< La taille maximale de clients
-#define MAX_COMMANDES 500
+// Données
+/////////////////////////////////////////////////   
+#define MAX_SPECIALITES 10 ///< Le nombre maximal de spécialités
+#define MAX_TRAVAILLEURS 50 ///< Le nombre maximal de travailleurs
+#define MAX_CLIENTS 100 ///< Le nombre maximal de clients
+#define MAX_COMMANDES 500 ///< Le nombre maximal de commandes
 
+/////////////////////////////////////////////////
+///	\brief Structure représentant une spécialité.
+/// 
+/////////////////////////////////////////////////  
 typedef struct
 {
 	Mot nom; ///< Nom de la specialité
 	int cout_horaire; ///< Coût horaire de la spécialité
 } Specialite;
 
+/////////////////////////////////////////////////
+///	\brief Structure représentant toutes les
+/// specialites.
+/// 
+/////////////////////////////////////////////////  
 typedef struct
 {
 	Specialite tab_specialites[MAX_SPECIALITES]; ///< Tableau contenant toutes les spécialités
 	unsigned int nb_specialites; ///< Nombre de spécialité developpée
 } Specialites;
 
+/////////////////////////////////////////////////
+///	\brief Structure représentant un travailleur.
+/// 
+/////////////////////////////////////////////////  
 typedef struct
 {
 	Mot nom; ///< Nom du travailleur
 	Booleen tags_competences[MAX_SPECIALITES]; ///< Tableau pour savoir dans quelle spécialité exerce le travailleur
 } Travailleur;
 
+/////////////////////////////////////////////////
+///	\brief Structure représentant tous les
+/// travailleurs.
+/// 
+/////////////////////////////////////////////////  
 typedef struct
 {
 	Travailleur tab_travailleurs[MAX_TRAVAILLEURS]; ///< Tableau contenant tous les travailleurs
 	unsigned int nb_travailleurs; ///< Nombre de travailleur embauché
 } Travailleurs;
 
+/////////////////////////////////////////////////
+///	\brief Structure représentant tous les 
+/// clients.
+/// 
+/////////////////////////////////////////////////  
 typedef struct
 {
 	Mot tab_clients[MAX_CLIENTS]; ///< Tableau contenant tous les clients
 	unsigned int nb_clients; ///< Nombre de client 
 } Clients;
 
-typedef struct
-{
-	Travailleur* tab_travailleurs[MAX_TRAVAILLEURS];
-	unsigned int nb_travailleurs;
-} Travailleurs_ptr;
-
+/////////////////////////////////////////////////
+///	\brief Structure représentant une tâche.
+/// 
+/////////////////////////////////////////////////  
 typedef struct
 {
 	unsigned int nb_heures_requises;
 	unsigned int nb_heures_effectuees;
-}Tache;
+} Tache;
 
+/////////////////////////////////////////////////
+///	\brief Structure représentant une commande.
+/// 
+///////////////////////////////////////////////// 
 typedef struct
 {
 	Tache taches_par_specialite[MAX_SPECIALITES];  // nb_heures_requises == 0 <=> pas de tache pour cette specialite
 	Mot nom_commande;
 	unsigned int idx_client;
-}Commande;
+} Commande;
 
+/////////////////////////////////////////////////
+///	\brief Structure représentant toutes les 
+/// commandes.
+/// 
+/////////////////////////////////////////////////
 typedef struct
 {
 	Commande tab_commandes[MAX_COMMANDES];
 	unsigned int nb_commandes;
-}Commandes;
+} Commandes;
 
+//	Prototypes des fonctions 
+/////////////////////////////////////////////////
+// Lexemes
 void get_id(Mot id);
 int get_int();
 
 // Utilitaires
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
-void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, const unsigned int indice, Travailleurs_ptr* specialistes);
-void print_travailleurs(const Travailleurs_ptr* travailleurs, const Mot* nom_specialite);
-void print_commandes(const Commandes* commandes, const unsigned int indice);
 
 // Instructions
 void traite_developpe(Specialites* specialites);
@@ -104,11 +154,24 @@ void traite_commande(const Clients* clients, Commandes* commandes);
 void traite_tache(const Specialites* specialites, Commandes* commandes);
 void traite_specialites(const Specialites* specialites);
 void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs);
-void traite_client(const Clients* clients, const Commandes* commandes);
+void traite_client(const Clients* clients, Commandes* commandes);
 void traite_supervision(const Specialites* specialites, const Commandes* commandes);
 void traite_charge();
 void traite_interruption();
 
+/////////////////////////////////////////////////
+///	\brief Boucle principale.
+/// 
+/// Gère les instructions entrées par 
+/// l'utilisateur.
+/// 
+/// \param argc Nombre d'arguments
+/// \param argv Arguments: "echo" permet un retour
+/// à l'écran de ce qu'on écrit via scanf
+/// 
+/// \return Etat du programme
+/// 
+/////////////////////////////////////////////////   
 int main(int argc, char* argv[])
 {
 	if (argc >= 2 && strcmp("echo", argv[1]) == 0)
@@ -205,6 +268,19 @@ int main(int argc, char* argv[])
 	system("pause");
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction developpe.
+/// 
+/// Récupère le nom de la spécialité et son coût
+/// horaire.
+/// 
+/// Garde en mémoire la nouvelle spécialité dans
+/// un tableau.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// 
+/////////////////////////////////////////////////  
 void traite_developpe(Specialites* specialites)
 {
 	Mot nom_specialite;
@@ -219,6 +295,21 @@ void traite_developpe(Specialites* specialites)
 	specialites->tab_specialites[specialites->nb_specialites++] = specialite;
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction embauche.
+/// 
+/// Récupère le nom du travailleur ainsi que 
+/// la specialite dans laquelle il va exercer.
+/// 
+/// Garde en mémoire le nouveau travailleur
+/// dans un tableau. 
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param travailleurs Pointeur sur la structure
+/// représentant tous les travailleurs.
+/// 
+///////////////////////////////////////////////// 
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 {
 	Mot nom_specialite, nom_travailleur;
@@ -240,14 +331,26 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 
 	if (exist == FAUX)
 	{
-		Travailleur travailleur; // Pour plus de lisibilité
+		Travailleur travailleur; // Variable temporaire pour plus de lisibilité
 		strncpy(travailleur.nom, nom_travailleur, LGMOT);
 		travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
 
-		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur;
+		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur; // On insère le nouveau travailleur dans le tableau
 	}
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction demarche.
+/// 
+/// Récupère le nom du client entré.
+/// 
+/// Garde en mémoire le nouveau client dans un 
+/// tableau.
+/// 
+/// \param clients Pointeur sur la structure 
+/// représentant tous les clients.
+/// 
+///////////////////////////////////////////////// 
 void traite_demarche(Clients* clients)
 {
 	Mot nom_client;
@@ -256,6 +359,20 @@ void traite_demarche(Clients* clients)
 	strncpy(clients->tab_clients[clients->nb_clients++], nom_client, LGMOT);
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction commande.
+/// 
+/// Récupère le nom de la commande et le client.
+///
+/// Insère la nouvelle commande dans le tableau
+/// contenant toutes les commandes.
+/// 
+/// \param clients Pointeur sur la structure 
+/// représentant tous les clients.
+/// \param commandes Pointeur sur la structure 
+/// représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_commande(const Clients* clients, Commandes* commandes)
 {
 	Mot nom_commande, nom_client;
@@ -263,17 +380,16 @@ void traite_commande(const Clients* clients, Commandes* commandes)
 	get_id(nom_commande);
 	get_id(nom_client);
 
-	Commande commande;
-
-	unsigned int j;
-	for (j = 0; j < MAX_SPECIALITES; ++j)
-	{
-		commande.taches_par_specialite[j].nb_heures_requises = 0;
-		commande.taches_par_specialite[j].nb_heures_effectuees = 0;
-	}
+	Commande commande; // Variable temporaire pour plus de lisibilité
 
 	unsigned int i;
-	for (i = 0; i < clients->nb_clients; i++)
+	for (i = 0; i < MAX_SPECIALITES; ++i) // Initialiser les heures requises
+	{
+		commande.taches_par_specialite[i].nb_heures_requises = 0;
+		commande.taches_par_specialite[i].nb_heures_effectuees = 0;
+	}
+
+	for (i = 0; i < clients->nb_clients; i++) // Récuperer l'indice du client
 	{
 		if (strcmp(clients->tab_clients[i], nom_client) == 0)
 		{
@@ -283,9 +399,24 @@ void traite_commande(const Clients* clients, Commandes* commandes)
 	}
 
 	strncpy(commande.nom_commande, nom_commande, LGMOT);
-	commandes->tab_commandes[commandes->nb_commandes++] = commande;
+	commandes->tab_commandes[commandes->nb_commandes++] = commande; // On insère la nouvelle commande dans le tableau
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction tache.
+/// 
+/// Récupère le nom de la commande, sa spécialité
+/// et le nombre d'heures pour effectuer la tache.
+/// 
+/// Affecte à la commande une nouvelle tâche en 
+/// indiquant le nombre d'heures requises.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param commandes Pointeur sur la structure 
+/// représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_tache(const Specialites* specialites, Commandes* commandes)
 {
 	Mot nom_specialite, nom_commande;
@@ -305,7 +436,22 @@ void traite_tache(const Specialites* specialites, Commandes* commandes)
 	}
 }
 
-
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction progression. 
+///
+/// Récupère le nom de la commande, la spécialité
+/// et le nombre d'heures à ajouter à son 
+/// avancement.
+/// 
+/// Met à jour la progression d'une tâche  
+/// en ajoutant des heures effectuées.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param commandes Pointeur sur la structure 
+/// représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_progression(const Specialites* specialites, Commandes* commandes)
 {
 	Mot nom_commande, nom_specialite;
@@ -325,16 +471,33 @@ void traite_progression(const Specialites* specialites, Commandes* commandes)
 	}
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction passe.
+/// 
+/// Réaffecte la tâche.
+/// 
+///////////////////////////////////////////////// 
 void traite_passe()
 {
-	//Pas de traitement d'affichage 
+	// Cette instruction n'a aucun effet.
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction spécialites.
+/// 
+/// Affiche la liste de toutes les specialités 
+/// existantes.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// 
+/////////////////////////////////////////////////  
 void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
 
-	for (unsigned int i = 0; i < specialites->nb_specialites; ++i)
+	unsigned int i = 0;
+	for (i = 0; i < specialites->nb_specialites; ++i)
 	{
 		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
 
@@ -347,90 +510,174 @@ void traite_specialites(const Specialites* specialites)
 	printf("\n");
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction travailleurs.
+/// 
+/// Récupère la spécialité pour lequel afficher
+/// ses travailleurs, ou "tous" pour toutes les
+/// spécialités.
+/// 
+/// Affiche la liste de tous les travailleurs 
+/// existants ou tous les travailleurs d'une 
+/// specialité en particulier.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param travailleurs Pointeur sur la structure
+/// représentant tous les travailleurs.
+/// 
+///////////////////////////////////////////////// 
 void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs)
 {
 	Mot nom_specialite;
 	get_id(nom_specialite);
 
-	if (strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
+	for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
 	{
-		for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
+		if (strcmp(nom_specialite, "tous") == 0 || get_indice(specialites, &nom_specialite) == indice) 
 		{
-			Travailleurs_ptr specialistes;
-			get_travailleurs(specialites, travailleurs, indice, &specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
-			print_travailleurs(&specialistes, &specialites->tab_specialites[indice].nom); // Affiche les travailleurs possédant la spécialité en question
+			unsigned int last = 0;
+			for (last = 0; last < travailleurs->nb_travailleurs; ++last) // Récuperer l'indice du dernier travailleur de la spécialité
+			{
+				if (travailleurs->tab_travailleurs[travailleurs->nb_travailleurs - 1 - last].tags_competences[indice] == VRAI)
+				{
+					last = travailleurs->nb_travailleurs - 1 - last;
+					break;
+				}
+			}
+
+			printf(MSG_TRAVAILLEURS, specialites->tab_specialites[indice].nom);
+
+			unsigned int i = 0;
+			for (i = 0; i < travailleurs->nb_travailleurs; ++i) // Afficher les travailleurs
+			{
+				if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
+				{
+					printf("%s", travailleurs->tab_travailleurs[i].nom);
+
+					if (i != last)
+					{
+						printf(", ");
+					}
+				}
+			}
+
+			printf("\n");
 		}
-	}
-	else
-	{
-		Travailleurs_ptr specialistes;
-		get_travailleurs(specialites, travailleurs, get_indice(specialites, &nom_specialite), &specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
-		print_travailleurs(&specialistes, &nom_specialite); // Affiche les travailleurs possédant la spécialité en question
 	}
 }
 
-void traite_client(const Clients* clients, const Commandes* commandes)
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction client.
+/// 
+/// Récupère le nom du client pour lequel afficher
+/// ses commandes, ou "tous" pour tous les
+/// clients.
+/// 
+/// Affiche la liste de toutes les commandes 
+/// effectuées par tous les clients ou pour un
+/// client en particulier.
+/// 
+/// \param clients Pointeur sur la structure 
+/// représentant tous les clients.
+/// 
+///////////////////////////////////////////////// 
+void traite_client(const Clients* clients, Commandes* commandes)
 {
 	Mot nom_client;
 	get_id(nom_client);
 
-	if (strcmp(nom_client, "tous") == 0) // Pour tous les clients
+	unsigned int i = 0;
+	for (i = 0; i < clients->nb_clients; ++i)
 	{
-		for (unsigned int i = 0; i < clients->nb_clients; ++i)
+		if (strcmp(nom_client, "tous") == 0 || strcmp(nom_client, clients->tab_clients[i]) == 0)
 		{
 			printf(MSG_CLIENT, clients->tab_clients[i]);
-			print_commandes(commandes, i);
-		}
-	}
-	else
-	{
-		for (unsigned int i = 0; i < clients->nb_clients; ++i)
-		{
-			if (strcmp(nom_client, clients->tab_clients[i]) == 0)
+
+			unsigned int last = 0; 
+			for (last = 0; last < clients->nb_clients; ++last) // Récuperer l'indice de la dernière commande du client
 			{
-				printf(MSG_CLIENT, nom_client);
-				print_commandes(commandes, i);
+				if (commandes->tab_commandes[clients->nb_clients - 1 - last].idx_client == i)
+				{
+					last = clients->nb_clients - 1 - last;
+					break;
+				}
 			}
+
+			unsigned int j = 0;
+			for (j = 0; j < commandes->nb_commandes; ++j) // Afficher les commandes
+			{
+				if (commandes->tab_commandes[j].idx_client == i)
+				{
+					printf("%s", commandes->tab_commandes[j].nom_commande);
+
+					if (j != last)
+					{
+						printf(", ");
+					}
+				}
+			}
+
+			printf("\n");
 		}
 	}
 }
 
-//Si il y a 0/0, on affiche rien après, si il y a qqch on affiche
-
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction supervision.
+/// 
+/// Affiche la progression de toutes les 
+/// commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_supervision(const Specialites* specialites, const Commandes* commandes)
 {
 	unsigned int i = 0;
 	for (i = 0; i < commandes->nb_commandes; ++i)
 	{
-		if (strlen(specialites->tab_specialites[i].nom) != 0)
-		{
-			printf(MSG_SUPERVISION, commandes->tab_commandes[i].nom_commande);
-		}
+		printf(MSG_SUPERVISION, commandes->tab_commandes[i].nom_commande);
 
-		unsigned int j = 0;
-		for (j = 0; j < MAX_SPECIALITES; j++)
+		unsigned int last = 0;
+		for (last = 0; last < MAX_SPECIALITES; ++last) // Récuperer l'indice de la dernière tâche de la commande
 		{
-			if (commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_effectuees != 0 || commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises != 0)
+			if (commandes->tab_commandes[i].taches_par_specialite[MAX_SPECIALITES - 1 - last].nb_heures_requises != 0)
+			{
+				last = MAX_SPECIALITES - 1 - last;
+				break;
+			}
+		}
+		
+		unsigned int j = 0;
+		for (j = 0; j < MAX_SPECIALITES; ++j) // Afficher les tâches
+		{
+			if (commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises != 0)
 			{
 				printf("%s:%d/%d",
-					specialites->tab_specialites[i].nom,
+					specialites->tab_specialites[j].nom,
 					commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_effectuees,
 					commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises);
 
-				if (j < MAX_SPECIALITES - 1)
+				if (j != last)
 				{
-					printf(" ");
+					printf(", ");
 				}
-
-				
 			}
-
 		}
-		
+
 		printf("\n");
 	}
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction charge.
+/// 
+/// Récupère le nom du travailleur pour lequel on
+/// veut afficher sa charge de travail.
+/// 
+/// Affiche la charge de travail d'un travailleur
+/// donné.
+/// 
+///////////////////////////////////////////////// 
 void traite_charge()
 {
 	Mot nom_travailleur;
@@ -439,11 +686,28 @@ void traite_charge()
 	printf(MSG_CHARGE, nom_travailleur);
 }
 
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction interruption.
+/// 
+/// Met fin au programme.
+/// 
+/////////////////////////////////////////////////  
 void traite_interruption()
 {
 	printf(MSG_INTERRUPTION);
 }
 
+/////////////////////////////////////////////////
+///	\brief Récupérer l'indice d'une spécialité
+/// dans le tableau contenant les spécialités.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param nom_specialite Pointeur sur le nom de 
+/// la spécialité pour lequel on veut récuperer 
+/// l'indice.
+/// 
+///////////////////////////////////////////////// 
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite)
 {
 	unsigned int indice;
@@ -458,55 +722,12 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 	return indice;
 }
 
-void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, const unsigned int indice, Travailleurs_ptr* specialistes)
-{
-	specialistes->nb_travailleurs = 0;
-
-	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; ++i)
-	{
-		if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
-		{
-			specialistes->tab_travailleurs[specialistes->nb_travailleurs++] = &travailleurs->tab_travailleurs[i];
-		}
-	}
-}
-
-void print_travailleurs(const Travailleurs_ptr* travailleurs, const Mot* nom_specialite)
-{
-	printf(MSG_TRAVAILLEURS, *nom_specialite);
-
-	for (unsigned int i = 0; i < travailleurs->nb_travailleurs; ++i)
-	{
-		printf("%s", travailleurs->tab_travailleurs[i]->nom);
-
-		if (i < travailleurs->nb_travailleurs - 1)
-		{
-			printf(", ");
-		}
-	}
-
-	printf("\n");
-}
-
-void print_commandes(const Commandes* commandes, const unsigned int indice_client)
-{
-	unsigned int i;
-	for (i = 0; i < commandes->nb_commandes; ++i)
-	{
-		if (commandes->tab_commandes[i].idx_client == indice_client)
-		{
-			printf("%s", commandes->tab_commandes[i].nom_commande);
-		}
-
-		if (i < commandes->nb_commandes - 1)
-		{
-			printf(", ");
-		}
-	}
-
-	printf("\n");
-}
-
+/////////////////////////////////////////////////
+///	\brief Récupérer les entrées de l'utilisateur.
+/// 
+/// \param id Le mot entrée
+/// 
+/////////////////////////////////////////////////   
 void get_id(Mot id)
 {
 	scanf("%s", id);
@@ -517,6 +738,13 @@ void get_id(Mot id)
 	}
 }
 
+/////////////////////////////////////////////////
+///	\brief Récupérer l'entrée puis le convertir 
+/// en un entier.
+/// 
+/// \return L'entier récupéré
+/// 
+/////////////////////////////////////////////////  
 int get_int()
 {
 	char buffer[NBCHIFFREMAX + 1];
