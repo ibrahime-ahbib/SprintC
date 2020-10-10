@@ -113,8 +113,6 @@ int get_int();
 
 // Utilitaires
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
-void get_travailleurs(Travailleurs* travailleurs, const unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes);
-void print_travailleurs(const Travailleur** specialistes, const unsigned int* nb_specialistes, const Mot* nom_specialite);
 
 // Instructions
 void traite_developpe(Specialites* specialites);
@@ -454,21 +452,38 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 	Mot nom_specialite;
 	get_id(nom_specialite);
 
-	Travailleur* specialistes[MAX_TRAVAILLEURS];
-	unsigned int nb_specialistes;
-
-	if (strcmp(nom_specialite, "tous") == 0) // Pour toutes les spécialités
+	for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
 	{
-		for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
+		if (strcmp(nom_specialite, "tous") == 0 || get_indice(specialites, &nom_specialite) == indice)
 		{
-			get_travailleurs(travailleurs, indice, specialistes, &nb_specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
-			print_travailleurs(specialistes, &nb_specialistes, &specialites->tab_specialites[indice].nom); // Affiche les travailleurs possédant la spécialité en question
+			unsigned int last = 0;
+			for (last = 0; last < travailleurs->nb_travailleurs; ++last) // Récuperer l'indice du dernier travailleur de la spécialité
+			{
+				if (travailleurs->tab_travailleurs[travailleurs->nb_travailleurs - 1 - last].tags_competences[indice] == VRAI)
+				{
+					last = travailleurs->nb_travailleurs - 1 - last;
+					break;
+				}
+			}
+
+			printf(MSG_TRAVAILLEURS, specialites->tab_specialites[indice].nom);
+
+			unsigned int i = 0;
+			for (i = 0; i < travailleurs->nb_travailleurs; ++i) // Afficher les travailleurs
+			{
+				if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
+				{
+					printf("%s", travailleurs->tab_travailleurs[i].nom);
+
+					if (i != last)
+					{
+						printf(", ");
+					}
+				}
+			}
+
+			printf("\n");
 		}
-	}
-	else
-	{
-		get_travailleurs(travailleurs, get_indice(specialites, &nom_specialite), specialistes, &nb_specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
-		print_travailleurs(specialistes, &nb_specialistes, &nom_specialite); // Affiche les travailleurs possédant la spécialité en question
 	}
 }
 
@@ -579,68 +594,6 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 	}
 
 	return indice;
-}
-
-/////////////////////////////////////////////////
-///	\brief Récupérer les travailleurs d'une
-/// spécialité en particulier.
-/// 
-/// \param[in] travailleurs Pointeur sur la 
-/// structure représentant tous les travailleurs.
-/// \param[in] indice L'indice de la spécialité 
-/// pour laquelle on veut récuperer les 
-/// travailleurs.
-/// \param[out] specialistes Pointeur sur un 
-/// tableau à remplir avec des pointeurs sur les 
-/// travailleurs appartenant à la spécialité 
-/// indiquée.
-/// \param[out] nb_specialistes Pointeur sur
-/// le compteur de specialistes.
-/// 
-///////////////////////////////////////////////// 
-void get_travailleurs(Travailleurs* travailleurs, const unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes)
-{
-	*nb_specialistes = 0;
-
-	unsigned int i = 0;
-	for (i = 0; i < travailleurs->nb_travailleurs; ++i)
-	{
-		if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
-		{
-			specialistes[(*nb_specialistes)++] = &travailleurs->tab_travailleurs[i];
-		}
-	}
-}
-
-/////////////////////////////////////////////////
-///	\brief Afficher tous les travailleurs
-/// contenu dans un tableau.
-/// 
-/// \param specialistes Pointeur sur un tableau
-/// contenant des pointeurs sur les travailleurs
-/// appartenant à la spécialité indiquée.
-/// \param nb_specialistes Pointeur sur le
-/// compteur de specialistes.
-/// \param nom_specialite Nom de la spécialité
-/// à laquelle appartiennent les travailleurs.
-/// 
-///////////////////////////////////////////////// 
-void print_travailleurs(const Travailleur** specialistes, const unsigned int* nb_specialistes, const Mot* nom_specialite)
-{
-	printf(MSG_TRAVAILLEURS, *nom_specialite);
-
-	unsigned int i = 0;
-	for (i = 0; i < *nb_specialistes; ++i)
-	{
-		printf("%s", specialistes[i]->nom);
-
-		if (i < *nb_specialistes - 1)
-		{
-			printf(", ");
-		}
-	}
-
-	printf("\n");
 }
 
 /////////////////////////////////////////////////
