@@ -113,7 +113,7 @@ int get_int();
 
 // Utilitaires
 unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
-void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes);
+void get_travailleurs(Travailleurs* travailleurs, unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes);
 void print_travailleurs(const Travailleur** specialistes, const unsigned int* nb_specialistes, const Mot* nom_specialite);
 
 // Instructions
@@ -364,7 +364,7 @@ void traite_tache()
 
 	get_id(nom_commande);
 	get_id(nom_specialite);
-	
+
 	int nombre_heures = get_int();
 
 	printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
@@ -461,13 +461,13 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 	{
 		for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
 		{
-			get_travailleurs(specialites, travailleurs, indice, specialistes, &nb_specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
+			get_travailleurs(travailleurs, indice, specialistes, &nb_specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
 			print_travailleurs(specialistes, &nb_specialistes, &specialites->tab_specialites[indice].nom); // Affiche les travailleurs possédant la spécialité en question
 		}
 	}
 	else
 	{
-		get_travailleurs(specialites, travailleurs, get_indice(specialites, &nom_specialite), specialistes, &nb_specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
+		get_travailleurs(travailleurs, get_indice(specialites, &nom_specialite), specialistes, &nb_specialistes); // Remplit le tableau avec les travailleurs possédant la spécialité en question
 		print_travailleurs(specialistes, &nb_specialistes, &nom_specialite); // Affiche les travailleurs possédant la spécialité en question
 	}
 }
@@ -600,7 +600,7 @@ unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialit
 /// le compteur de specialistes.
 /// 
 ///////////////////////////////////////////////// 
-void get_travailleurs(const Specialites* specialites, Travailleurs* travailleurs, unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes)
+void get_travailleurs(Travailleurs* travailleurs, unsigned int indice, Travailleur** specialistes, unsigned int* nb_specialistes)
 {
 	*nb_specialistes = 0;
 
