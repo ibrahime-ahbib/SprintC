@@ -364,6 +364,7 @@ void traite_tache()
 
 	get_id(nom_commande);
 	get_id(nom_specialite);
+	
 	int nombre_heures = get_int();
 
 	printf(MSG_TACHE, nom_commande, nom_specialite, nombre_heures);
