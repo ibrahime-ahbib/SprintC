@@ -595,11 +595,11 @@ void traite_client(const Clients* clients, Commandes* commandes)
 			printf(MSG_CLIENT, clients->tab_clients[i]);
 
 			unsigned int last = 0; 
-			for (last = 0; last < clients->nb_clients; ++last) // Récuperer l'indice de la dernière commande du client
+			for (last = 0; last < commandes->nb_commandes; ++last) // Récuperer l'indice de la dernière commande du client
 			{
-				if (commandes->tab_commandes[clients->nb_clients - 1 - last].idx_client == i)
+				if (commandes->tab_commandes[commandes->nb_commandes - 1 - last].idx_client == i)
 				{
-					last = clients->nb_clients - 1 - last;
+					last = commandes->nb_commandes - 1 - last;
 					break;
 				}
 			}
