@@ -109,8 +109,8 @@ typedef struct
 /////////////////////////////////////////////////  
 typedef struct
 {
-	unsigned int nb_heures_requises;
-	unsigned int nb_heures_effectuees;
+	unsigned int nb_heures_requises; ///< Nombre d'heures requises pour effectuer la tâche
+	unsigned int nb_heures_effectuees; ///< Nombre d'heures effectuées
 } Tache;
 
 /////////////////////////////////////////////////
@@ -120,8 +120,8 @@ typedef struct
 typedef struct
 {
 	Tache taches_par_specialite[MAX_SPECIALITES];  // nb_heures_requises == 0 <=> pas de tache pour cette specialite
-	Mot nom_commande;
-	unsigned int idx_client;
+	Mot nom_commande; ///< Nom de la commande
+	unsigned int idx_client; ///< Indice du client auquel appartient la commande
 } Commande;
 
 /////////////////////////////////////////////////
@@ -131,8 +131,8 @@ typedef struct
 /////////////////////////////////////////////////
 typedef struct
 {
-	Commande tab_commandes[MAX_COMMANDES];
-	unsigned int nb_commandes;
+	Commande tab_commandes[MAX_COMMANDES]; ///< Tableau contenant toutes les commandes
+	unsigned int nb_commandes; ///< Nombre de commandes effectuées
 } Commandes;
 
 //	Prototypes des fonctions 
