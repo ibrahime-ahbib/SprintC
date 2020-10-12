@@ -1,5 +1,5 @@
-# sprint4
+# sprint3
 
 **Qu'est-ce qu'elle fait?**
 
-Le but de ce sprint est d'affecter automatiquement un travailleur à une nouvelle tâche.
+Le but de ce sprint est de garder en mémoire les commandes des clients puis d'implémenter leur affichage.
