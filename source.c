@@ -580,6 +580,8 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 /// 
 /// \param clients Pointeur sur la structure 
 /// représentant tous les clients.
+/// \param commandes Pointeur sur la structure
+/// représentant toutes les commandes.
 /// 
 ///////////////////////////////////////////////// 
 void traite_client(const Clients* clients, Commandes* commandes)
@@ -628,6 +630,11 @@ void traite_client(const Clients* clients, Commandes* commandes)
 /// 
 /// Affiche la progression de toutes les 
 /// commandes.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param travailleurs Pointeur sur la structure
+/// représentant toutes les commandes.
 /// 
 ///////////////////////////////////////////////// 
 void traite_supervision(const Specialites* specialites, const Commandes* commandes)
