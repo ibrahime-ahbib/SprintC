@@ -287,7 +287,7 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 
 	Booleen exist = FAUX;
 
-	unsigned int indice_travailleur = 0;
+	unsigned int indice_travailleur;
 	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur)
 	{
 		if (strcmp(travailleurs->tab_travailleurs[indice_travailleur].nom, nom_travailleur) == 0)
@@ -417,7 +417,7 @@ void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
 
-	unsigned int indice_specialite = 0;
+	unsigned int indice_specialite;
 	for (indice_specialite = 0; indice_specialite < specialites->nb_specialites; ++indice_specialite)
 	{
 		if (indice_specialite != 0)
@@ -455,7 +455,8 @@ void traite_travailleurs(const Specialites* specialites, const Travailleurs* tra
 
 	if (strcmp(nom_specialite, "tous") == 0)
 	{
-		for (unsigned int indice_travailleur = 0; indice_travailleur < specialites->nb_specialites; ++indice_travailleur)
+		unsigned int indice_travailleur;
+		for (indice_travailleur = 0; indice_travailleur < specialites->nb_specialites; ++indice_travailleur)
 		{
 			print_travailleurs(travailleurs, specialites->tab_specialites[indice_travailleur].nom, indice_travailleur);
 		}
@@ -488,7 +489,7 @@ void traite_client(const Clients* clients)
 
 	if (strcmp(nom_client, "tous") == 0) // Pour tous les clients
 	{
-		unsigned int indice_client = 0;
+		unsigned int indice_client;
 		for (indice_client = 0; indice_client < clients->nb_clients; ++indice_client)
 		{
 			printf(MSG_CLIENT_TOUS, clients->tab_clients[indice_client]);
@@ -563,10 +564,10 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 
 	Booleen first = VRAI;
 
-	unsigned int i = 0;
-	for (i = 0; i < travailleurs->nb_travailleurs; ++i) // Parcourir tous les travailleurs
+	unsigned int indice_travailleur;
+	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur) // Parcourir tous les travailleurs
 	{
-		if (travailleurs->tab_travailleurs[i].tags_competences[indice_specialite] == VRAI) // S'il possède la spécialité
+		if (travailleurs->tab_travailleurs[indice_travailleur].tags_competences[indice_specialite] == VRAI) // S'il possède la spécialité
 		{
 			if (first)
 			{
@@ -577,7 +578,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 				printf(", ");
 			}
 
-			printf("%s", travailleurs->tab_travailleurs[i].nom);
+			printf("%s", travailleurs->tab_travailleurs[indice_travailleur].nom);
 		}
 	}
 
