@@ -419,12 +419,12 @@ void traite_specialites(const Specialites* specialites)
 	unsigned int i = 0;
 	for (i = 0; i < specialites->nb_specialites; ++i)
 	{
-		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
-
-		if (i < specialites->nb_specialites - 1)
+		if (i != 0)
 		{
 			printf(", ");
 		}
+
+		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
 	}
 
 	printf("\n");
@@ -456,29 +456,25 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 	{
 		if (strcmp(nom_specialite, "tous") == 0 || get_indice(specialites, &nom_specialite) == indice)
 		{
-			unsigned int last = 0;
-			for (last = 0; last < travailleurs->nb_travailleurs; ++last) // Récuperer l'indice du dernier travailleur de la spécialité
-			{
-				if (travailleurs->tab_travailleurs[travailleurs->nb_travailleurs - 1 - last].tags_competences[indice] == VRAI)
-				{
-					last = travailleurs->nb_travailleurs - 1 - last;
-					break;
-				}
-			}
-
 			printf(MSG_TRAVAILLEURS, specialites->tab_specialites[indice].nom);
+
+			Booleen first = VRAI;
 
 			unsigned int i = 0;
 			for (i = 0; i < travailleurs->nb_travailleurs; ++i) // Afficher les travailleurs
 			{
 				if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
 				{
-					printf("%s", travailleurs->tab_travailleurs[i].nom);
-
-					if (i != last)
+					if (first)
+					{
+						first = FAUX;
+					}
+					else
 					{
 						printf(", ");
 					}
+
+					printf("%s", travailleurs->tab_travailleurs[i].nom);
 				}
 			}
 
