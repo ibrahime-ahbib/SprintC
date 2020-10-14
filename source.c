@@ -112,7 +112,7 @@ void get_id(Mot id);
 int get_int();
 
 // Utilitaires
-unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite);
+const unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite);
 void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite);
 
 // Instructions
@@ -601,7 +601,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 /// pour lequel on veut récuperer l'indice.
 /// 
 ///////////////////////////////////////////////// 
-unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite)
+const unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite)
 {
 	unsigned int indice;
 	for (indice = 0; indice < specialites->nb_specialites; ++indice)
