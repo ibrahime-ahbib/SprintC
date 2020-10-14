@@ -124,7 +124,7 @@ void traite_passe();
 void traite_commande();
 void traite_tache();
 void traite_specialites(const Specialites* specialites);
-void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs);
+void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs);
 void traite_client(const Clients* clients);
 void traite_supervision();
 void traite_charge();
@@ -287,13 +287,13 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 
 	Booleen exist = FAUX;
 
-	unsigned int i = 0;
-	for (i = 0; i < travailleurs->nb_travailleurs; ++i)
+	unsigned int indice_travailleur = 0;
+	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur)
 	{
-		if (strcmp(travailleurs->tab_travailleurs[i].nom, nom_travailleur) == 0)
+		if (strcmp(travailleurs->tab_travailleurs[indice_travailleur].nom, nom_travailleur) == 0)
 		{
 			exist = VRAI;
-			travailleurs->tab_travailleurs[i].tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
+			travailleurs->tab_travailleurs[indice_travailleur].tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 
 			return;
 		}
@@ -417,15 +417,15 @@ void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
 
-	unsigned int i = 0;
-	for (i = 0; i < specialites->nb_specialites; ++i)
+	unsigned int indice_specialite = 0;
+	for (indice_specialite = 0; indice_specialite < specialites->nb_specialites; ++indice_specialite)
 	{
-		if (i != 0)
+		if (indice_specialite != 0)
 		{
 			printf(", ");
 		}
 
-		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
+		printf("%s/%d", specialites->tab_specialites[indice_specialite].nom, specialites->tab_specialites[indice_specialite].cout_horaire);
 	}
 
 	printf("\n");
@@ -448,16 +448,16 @@ void traite_specialites(const Specialites* specialites)
 /// représentant tous les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
-void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs)
+void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs)
 {
 	Mot nom_specialite;
 	get_id(nom_specialite);
 
 	if (strcmp(nom_specialite, "tous") == 0)
 	{
-		for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
+		for (unsigned int indice_travailleur = 0; indice_travailleur < specialites->nb_specialites; ++indice_travailleur)
 		{
-			print_travailleurs(travailleurs, specialites->tab_specialites[indice].nom, indice);
+			print_travailleurs(travailleurs, specialites->tab_specialites[indice_travailleur].nom, indice_travailleur);
 		}
 	}
 	else
@@ -488,24 +488,17 @@ void traite_client(const Clients* clients)
 
 	if (strcmp(nom_client, "tous") == 0) // Pour tous les clients
 	{
-		unsigned int i = 0;
-		for (i = 0; i < clients->nb_clients; ++i)
+		unsigned int indice_client = 0;
+		for (indice_client = 0; indice_client < clients->nb_clients; ++indice_client)
 		{
-			printf(MSG_CLIENT_TOUS, clients->tab_clients[i]);
+			printf(MSG_CLIENT_TOUS, clients->tab_clients[indice_client]);
 			printf("\n");
 		}
 	}
 	else
 	{
-		unsigned int i = 0;
-		for (i = 0; i < clients->nb_clients; ++i)
-		{
-			if (strcmp(nom_client, clients->tab_clients[i]) == 0)
-			{
-				printf(MSG_CLIENT, nom_client);
-				printf("\n");
-			}
-		}
+		printf(MSG_CLIENT, nom_client);
+		printf("\n");
 	}
 }
 
