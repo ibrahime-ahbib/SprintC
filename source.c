@@ -142,7 +142,11 @@ void get_id(Mot id);
 int get_int();
 
 // Utilitaires
-unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
+const unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite);
+const unsigned int get_indice_commande(const Commandes* commandes, const Mot nom_commandes);
+const unsigned int get_indice_client(const Clients* clients, const Mot nom_client);
+void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite);
+void print_commandes(const Commandes* commandes, const Mot nom_client, const unsigned int indice_client);
 
 // Instructions
 void traite_developpe(Specialites* specialites);
@@ -153,8 +157,8 @@ void traite_passe();
 void traite_commande(const Clients* clients, Commandes* commandes);
 void traite_tache(const Specialites* specialites, Commandes* commandes);
 void traite_specialites(const Specialites* specialites);
-void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs);
-void traite_client(const Clients* clients, Commandes* commandes);
+void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs);
+void traite_client(const Clients* clients, const Commandes* commandes);
 void traite_supervision(const Specialites* specialites, const Commandes* commandes);
 void traite_charge();
 void traite_interruption();
@@ -319,23 +323,23 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 
 	Booleen exist = FAUX;
 
-	unsigned int i = 0;
-	for (i = 0; i < travailleurs->nb_travailleurs; ++i)
+	unsigned int indice_travailleur = 0;
+	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur)
 	{
-		if (strcmp(travailleurs->tab_travailleurs[i].nom, nom_travailleur) == 0)
+		if (strcmp(travailleurs->tab_travailleurs[indice_travailleur].nom, nom_travailleur) == 0)
 		{
 			exist = VRAI;
-			travailleurs->tab_travailleurs[i].tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+			travailleurs->tab_travailleurs[indice_travailleur].tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
+
+			return;
 		}
 	}
 
 	if (exist == FAUX)
 	{
-		Travailleur travailleur; // Variable temporaire pour plus de lisibilité
-		strncpy(travailleur.nom, nom_travailleur, LGMOT);
-		travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
-
-		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur; // On insère le nouveau travailleur dans le tableau
+		Travailleur* travailleur = &travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++]; // Le nouveau travailleur 
+		strncpy(travailleur->nom, nom_travailleur, LGMOT);
+		travailleur->tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 	}
 }
 
@@ -382,21 +386,14 @@ void traite_commande(const Clients* clients, Commandes* commandes)
 
 	Commande commande; // Variable temporaire pour plus de lisibilité
 
-	unsigned int i;
-	for (i = 0; i < MAX_SPECIALITES; ++i) // Initialiser les heures requises
+	unsigned int indice_specialite;
+	for (indice_specialite = 0; indice_specialite < MAX_SPECIALITES; ++indice_specialite) // Initialiser les heures requises
 	{
-		commande.taches_par_specialite[i].nb_heures_requises = 0;
-		commande.taches_par_specialite[i].nb_heures_effectuees = 0;
+		commande.taches_par_specialite[indice_specialite].nb_heures_requises = 0;
+		commande.taches_par_specialite[indice_specialite].nb_heures_effectuees = 0;
 	}
 
-	for (i = 0; i < clients->nb_clients; i++) // Récuperer l'indice du client
-	{
-		if (strcmp(clients->tab_clients[i], nom_client) == 0)
-		{
-			commande.idx_client = i;
-			break;
-		}
-	}
+	commande.idx_client = get_indice_client(clients, nom_client); // Indice du client
 
 	strncpy(commande.nom_commande, nom_commande, LGMOT);
 	commandes->tab_commandes[commandes->nb_commandes++] = commande; // On insère la nouvelle commande dans le tableau
@@ -426,14 +423,9 @@ void traite_tache(const Specialites* specialites, Commandes* commandes)
 
 	int heures_requises = get_int();
 
-	unsigned int i;
-	for (i = 0; i < commandes->nb_commandes; ++i)
-	{
-		if (strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
-		{
-			commandes->tab_commandes[i].taches_par_specialite[get_indice(specialites, &nom_specialite)].nb_heures_requises = heures_requises;
-		}
-	}
+	commandes->tab_commandes[get_indice_commande(commandes, nom_commande)]
+		.taches_par_specialite[get_indice_specialite(specialites, nom_specialite)]
+		.nb_heures_requises = heures_requises;
 }
 
 /////////////////////////////////////////////////
@@ -461,14 +453,9 @@ void traite_progression(const Specialites* specialites, Commandes* commandes)
 
 	int heures_effectuees = get_int();
 
-	unsigned int i;
-	for (i = 0; i < commandes->nb_commandes; ++i)
-	{
-		if (strcmp(commandes->tab_commandes[i].nom_commande, nom_commande) == 0)
-		{
-			commandes->tab_commandes[i].taches_par_specialite[get_indice(specialites, &nom_specialite)].nb_heures_effectuees += heures_effectuees;
-		}
-	}
+	commandes->tab_commandes[get_indice_commande(commandes, nom_commande)]
+		.taches_par_specialite[get_indice_specialite(specialites, nom_specialite)]
+		.nb_heures_effectuees += heures_effectuees;
 }
 
 /////////////////////////////////////////////////
@@ -496,15 +483,15 @@ void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
 
-	unsigned int i = 0;
-	for (i = 0; i < specialites->nb_specialites; ++i)
+	unsigned int indice_specialite = 0;
+	for (indice_specialite = 0; indice_specialite < specialites->nb_specialites; ++indice_specialite)
 	{
-		printf("%s/%d", specialites->tab_specialites[i].nom, specialites->tab_specialites[i].cout_horaire);
-
-		if (i < specialites->nb_specialites - 1)
+		if (indice_specialite != 0)
 		{
 			printf(", ");
 		}
+
+		printf("%s/%d", specialites->tab_specialites[indice_specialite].nom, specialites->tab_specialites[indice_specialite].cout_horaire);
 	}
 
 	printf("\n");
@@ -527,43 +514,22 @@ void traite_specialites(const Specialites* specialites)
 /// représentant tous les travailleurs.
 /// 
 ///////////////////////////////////////////////// 
-void traite_travailleurs(const Specialites* specialites, Travailleurs* travailleurs)
+void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs)
 {
 	Mot nom_specialite;
 	get_id(nom_specialite);
 
-	for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
+	if (strcmp(nom_specialite, "tous") == 0)
 	{
-		if (strcmp(nom_specialite, "tous") == 0 || get_indice(specialites, &nom_specialite) == indice) 
+		unsigned int indice_travailleur;
+		for (indice_travailleur = 0; indice_travailleur < specialites->nb_specialites; ++indice_travailleur)
 		{
-			unsigned int last = 0;
-			for (last = 0; last < travailleurs->nb_travailleurs; ++last) // Récuperer l'indice du dernier travailleur de la spécialité
-			{
-				if (travailleurs->tab_travailleurs[travailleurs->nb_travailleurs - 1 - last].tags_competences[indice] == VRAI)
-				{
-					last = travailleurs->nb_travailleurs - 1 - last;
-					break;
-				}
-			}
-
-			printf(MSG_TRAVAILLEURS, specialites->tab_specialites[indice].nom);
-
-			unsigned int i = 0;
-			for (i = 0; i < travailleurs->nb_travailleurs; ++i) // Afficher les travailleurs
-			{
-				if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
-				{
-					printf("%s", travailleurs->tab_travailleurs[i].nom);
-
-					if (i != last)
-					{
-						printf(", ");
-					}
-				}
-			}
-
-			printf("\n");
+			print_travailleurs(travailleurs, specialites->tab_specialites[indice_travailleur].nom, indice_travailleur);
 		}
+	}
+	else
+	{
+		print_travailleurs(travailleurs, nom_specialite, get_indice_specialite(specialites, nom_specialite));
 	}
 }
 
@@ -584,44 +550,22 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 /// représentant toutes les commandes.
 /// 
 ///////////////////////////////////////////////// 
-void traite_client(const Clients* clients, Commandes* commandes)
+void traite_client(const Clients* clients, const Commandes* commandes)
 {
 	Mot nom_client;
 	get_id(nom_client);
 
-	unsigned int i = 0;
-	for (i = 0; i < clients->nb_clients; ++i)
+	if (strcmp(nom_client, "tous") == 0)
 	{
-		if (strcmp(nom_client, "tous") == 0 || strcmp(nom_client, clients->tab_clients[i]) == 0)
+		unsigned int indice_client = 0;
+		for (indice_client = 0; indice_client < clients->nb_clients; ++indice_client)
 		{
-			printf(MSG_CLIENT, clients->tab_clients[i]);
-
-			unsigned int last = 0; 
-			for (last = 0; last < commandes->nb_commandes; ++last) // Récuperer l'indice de la dernière commande du client
-			{
-				if (commandes->tab_commandes[commandes->nb_commandes - 1 - last].idx_client == i)
-				{
-					last = commandes->nb_commandes - 1 - last;
-					break;
-				}
-			}
-
-			unsigned int j = 0;
-			for (j = 0; j < commandes->nb_commandes; ++j) // Afficher les commandes
-			{
-				if (commandes->tab_commandes[j].idx_client == i)
-				{
-					printf("%s", commandes->tab_commandes[j].nom_commande);
-
-					if (j != last)
-					{
-						printf(", ");
-					}
-				}
-			}
-
-			printf("\n");
+			print_commandes(commandes, clients->tab_clients[indice_client], indice_client);
 		}
+	}
+	else
+	{
+		print_commandes(commandes, nom_client, get_indice_client(clients, nom_client));
 	}
 }
 
@@ -639,35 +583,31 @@ void traite_client(const Clients* clients, Commandes* commandes)
 ///////////////////////////////////////////////// 
 void traite_supervision(const Specialites* specialites, const Commandes* commandes)
 {
-	unsigned int i = 0;
-	for (i = 0; i < commandes->nb_commandes; ++i)
+	unsigned int indice_commande = 0;
+	for (indice_commande = 0; indice_commande < commandes->nb_commandes; ++indice_commande)
 	{
-		printf(MSG_SUPERVISION, commandes->tab_commandes[i].nom_commande);
+		printf(MSG_SUPERVISION, commandes->tab_commandes[indice_commande].nom_commande);
 
-		unsigned int last = 0;
-		for (last = 0; last < MAX_SPECIALITES; ++last) // Récuperer l'indice de la dernière tâche de la commande
-		{
-			if (commandes->tab_commandes[i].taches_par_specialite[MAX_SPECIALITES - 1 - last].nb_heures_requises != 0)
-			{
-				last = MAX_SPECIALITES - 1 - last;
-				break;
-			}
-		}
+		Booleen first = VRAI;
 		
-		unsigned int j = 0;
-		for (j = 0; j < MAX_SPECIALITES; ++j) // Afficher les tâches
+		unsigned int indice_specialite = 0;
+		for (indice_specialite = 0; indice_specialite < MAX_SPECIALITES; ++indice_specialite) // Afficher les tâches
 		{
-			if (commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises != 0)
+			if (commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_requises != 0)
 			{
-				printf("%s:%d/%d",
-					specialites->tab_specialites[j].nom,
-					commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_effectuees,
-					commandes->tab_commandes[i].taches_par_specialite[j].nb_heures_requises);
-
-				if (j != last)
+				if (first)
+				{
+					first = FAUX;
+				}
+				else
 				{
 					printf(", ");
 				}
+
+				printf("%s:%d/%d",
+					specialites->tab_specialites[indice_specialite].nom,
+					commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_effectuees,
+					commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_requises);
 			}
 		}
 
@@ -705,22 +645,149 @@ void traite_interruption()
 }
 
 /////////////////////////////////////////////////
+///	\brief Afficher les travailleurs possèdant
+/// une compétence en particulier.
+/// 
+/// \param commandes Pointeur sur la structure
+/// représentant toutes les commandes.
+/// \param nom_client Le nom du client pour  
+/// lequel on veut afficher ses commandes.
+/// \param indice_client L'indice du client pour
+/// lequel on veut afficher ses commandes.
+/// 
+///////////////////////////////////////////////// 
+void print_commandes(const Commandes* commandes, const Mot nom_client, const unsigned int indice_client)
+{
+	printf(MSG_CLIENT, nom_client);
+
+	Booleen first = VRAI;
+
+	unsigned int indice_commande = 0;
+	for (indice_commande = 0; indice_commande < commandes->nb_commandes; ++indice_commande) // Afficher les commandes
+	{
+		if (commandes->tab_commandes[indice_commande].idx_client == indice_client)
+		{
+			if (first)
+			{
+				first = FAUX;
+			}
+			else
+			{
+				printf(", ");
+			}
+
+			printf("%s", commandes->tab_commandes[indice_commande].nom_commande);
+		}
+	}
+
+	printf("\n");
+}
+
+/////////////////////////////////////////////////
+///	\brief Afficher les travailleurs possèdant
+/// une compétence en particulier.
+/// 
+/// \param travailleurs Pointeur sur la structure
+/// représentant tous les travailleurs.
+/// \param nom_specialite Le nom de la spécialité 
+/// pour laquelle on veut afficher les
+/// travailleurs l'exercant.
+/// \param indice_specialite L'indice de la 
+/// spécialité pour laquelle on veut afficher les
+/// travailleurs l'exercant.
+/// 
+///////////////////////////////////////////////// 
+void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite)
+{
+	printf(MSG_TRAVAILLEURS, nom_specialite);
+
+	Booleen first = VRAI;
+
+	unsigned int indice_travailleur = 0;
+	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur) // Parcourir tous les travailleurs
+	{
+		if (travailleurs->tab_travailleurs[indice_travailleur].tags_competences[indice_specialite] == VRAI) // S'il possède la spécialité
+		{
+			if (first)
+			{
+				first = FAUX;
+			}
+			else
+			{
+				printf(", ");
+			}
+
+			printf("%s", travailleurs->tab_travailleurs[indice_travailleur].nom);
+		}
+	}
+
+	printf("\n");
+}
+
+/////////////////////////////////////////////////
+///	\brief Récupérer l'indice d'une spécialité
+/// dans le tableau contenant les spécialités.
+/// 
+/// \param commandes Pointeur sur la structure
+/// représentant toutes les commandes.
+/// \param nom_commande Le nom de la commande 
+/// pour lequel on veut récuperer l'indice.
+/// 
+///////////////////////////////////////////////// 
+const unsigned int get_indice_commande(const Commandes* commandes, const Mot nom_commandes)
+{
+	unsigned int indice;
+	for (indice = 0; indice < commandes->nb_commandes; ++indice)
+	{
+		if (strcmp(commandes->tab_commandes[indice].nom_commande, nom_commandes) == 0)
+		{
+			break;
+		}
+	}
+
+	return indice;
+}
+
+/////////////////////////////////////////////////
+///	\brief Récupérer l'indice d'une spécialité
+/// dans le tableau contenant les spécialités.
+/// 
+/// \param clients Pointeur sur la structure
+/// représentant tous les clients.
+/// \param nom_client Le nom du client pour 
+/// lequel on veut récuperer l'indice.
+/// 
+///////////////////////////////////////////////// 
+const unsigned int get_indice_client(const Clients* clients, const Mot nom_client)
+{
+	unsigned int indice;
+	for (indice = 0; indice < clients->nb_clients; ++indice)
+	{
+		if (strcmp(clients->tab_clients[indice], nom_client) == 0)
+		{
+			break;
+		}
+	}
+
+	return indice;
+}
+
+/////////////////////////////////////////////////
 ///	\brief Récupérer l'indice d'une spécialité
 /// dans le tableau contenant les spécialités.
 /// 
 /// \param specialites Pointeur sur la structure
 /// représentant toutes les spécialités.
-/// \param nom_specialite Pointeur sur le nom de 
-/// la spécialité pour lequel on veut récuperer 
-/// l'indice.
+/// \param nom_specialite Le nom de la spécialité 
+/// pour lequel on veut récuperer l'indice.
 /// 
 ///////////////////////////////////////////////// 
-unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite)
+const unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite)
 {
 	unsigned int indice;
 	for (indice = 0; indice < specialites->nb_specialites; ++indice)
 	{
-		if (strcmp(specialites->tab_specialites[indice].nom, *nom_specialite) == 0)
+		if (strcmp(specialites->tab_specialites[indice].nom, nom_specialite) == 0)
 		{
 			break;
 		}
