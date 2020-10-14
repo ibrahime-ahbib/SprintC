@@ -710,7 +710,9 @@ void traite_charge(const Specialites* specialites, const Travailleurs* travaille
 				unsigned int indice_specialite;
 				for (indice_specialite = 0; indice_specialite < MAX_SPECIALITES; ++indice_specialite)
 				{
-					if (commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].indice_travailleur == indice_travailleur && commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_effectuees < commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_requises)
+					Tache* tache = &commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite];
+
+					if (tache->indice_travailleur == indice_travailleur && tache->nb_heures_effectuees < tache->nb_heures_requises)
 					{
 						if (first == VRAI)
 						{
@@ -721,11 +723,9 @@ void traite_charge(const Specialites* specialites, const Travailleurs* travaille
 							printf(", ");
 						}
 
-						int heures_restantes = commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_requises - commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_effectuees;
-
 						printf("%s/%s/%dheure(s)", commandes->tab_commandes[indice_commande].nom_commande,
 							specialites->tab_specialites[indice_specialite].nom,
-							heures_restantes);
+							tache->nb_heures_requises - tache->nb_heures_effectuees);
 					}
 				}
 			}
