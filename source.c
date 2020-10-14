@@ -112,7 +112,8 @@ void get_id(Mot id);
 int get_int();
 
 // Utilitaires
-unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite);
+unsigned int get_indice(const Specialites* specialites, const Mot nom_specialite);
+void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite);
 
 // Instructions
 void traite_developpe(Specialites* specialites);
@@ -292,7 +293,9 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 		if (strcmp(travailleurs->tab_travailleurs[i].nom, nom_travailleur) == 0)
 		{
 			exist = VRAI;
-			travailleurs->tab_travailleurs[i].tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+			travailleurs->tab_travailleurs[i].tags_competences[get_indice(specialites, nom_specialite)] = VRAI;
+
+			break;
 		}
 	}
 
@@ -300,7 +303,7 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 	{
 		Travailleur travailleur; // Variable temporaire pour plus de lisibilité
 		strncpy(travailleur.nom, nom_travailleur, LGMOT);
-		travailleur.tags_competences[get_indice(specialites, &nom_specialite)] = VRAI;
+		travailleur.tags_competences[get_indice(specialites, nom_specialite)] = VRAI;
 
 		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur; // On insère le nouveau travailleur dans le tableau
 	}
@@ -452,34 +455,16 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 	Mot nom_specialite;
 	get_id(nom_specialite);
 
-	for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
+	if (strcmp(nom_specialite, "tous") == 0)
 	{
-		if (strcmp(nom_specialite, "tous") == 0 || get_indice(specialites, &nom_specialite) == indice)
+		for (unsigned int indice = 0; indice < specialites->nb_specialites; ++indice)
 		{
-			printf(MSG_TRAVAILLEURS, specialites->tab_specialites[indice].nom);
-
-			Booleen first = VRAI;
-
-			unsigned int i = 0;
-			for (i = 0; i < travailleurs->nb_travailleurs; ++i) // Afficher les travailleurs
-			{
-				if (travailleurs->tab_travailleurs[i].tags_competences[indice] == VRAI)
-				{
-					if (first)
-					{
-						first = FAUX;
-					}
-					else
-					{
-						printf(", ");
-					}
-
-					printf("%s", travailleurs->tab_travailleurs[i].nom);
-				}
-			}
-
-			printf("\n");
+			print_travailleurs(travailleurs, specialites->tab_specialites[indice].nom, indice);
 		}
+	}
+	else
+	{
+		print_travailleurs(travailleurs, nom_specialite, get_indice(specialites, nom_specialite));
 	}
 }
 
@@ -568,22 +553,62 @@ void traite_interruption()
 }
 
 /////////////////////////////////////////////////
+///	\brief Afficher les travailleurs possèdant
+/// une compétence en particulier.
+/// 
+/// \param travailleurs Pointeur sur la structure
+/// représentant tous les travailleurs.
+/// \param nom_specialite Le nom de la spécialité 
+/// pour laquelle on veut afficher les
+/// travailleurs l'exercant.
+/// \param indice_specialite L'indice de la 
+/// spécialité pour laquelle on veut afficher les
+/// travailleurs l'exercant.
+/// 
+///////////////////////////////////////////////// 
+void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite)
+{
+	printf(MSG_TRAVAILLEURS, nom_specialite);
+
+	Booleen first = VRAI;
+
+	unsigned int i = 0;
+	for (i = 0; i < travailleurs->nb_travailleurs; ++i) // Parcourir tous les travailleurs
+	{
+		if (travailleurs->tab_travailleurs[i].tags_competences[indice_specialite] == VRAI) // S'il possède la spécialité
+		{
+			if (first)
+			{
+				first = FAUX;
+			}
+			else
+			{
+				printf(", ");
+			}
+
+			printf("%s", travailleurs->tab_travailleurs[i].nom);
+		}
+	}
+
+	printf("\n");
+}
+
+/////////////////////////////////////////////////
 ///	\brief Récupérer l'indice d'une spécialité
 /// dans le tableau contenant les spécialités.
 /// 
 /// \param specialites Pointeur sur la structure
 /// représentant toutes les spécialités.
-/// \param nom_specialite Pointeur sur le nom de 
-/// la spécialité pour lequel on veut récuperer 
-/// l'indice.
+/// \param nom_specialite Le nom de la spécialité 
+/// pour lequel on veut récuperer l'indice.
 /// 
 ///////////////////////////////////////////////// 
-unsigned int get_indice(const Specialites* specialites, const Mot* nom_specialite)
+unsigned int get_indice(const Specialites* specialites, const Mot nom_specialite)
 {
 	unsigned int indice;
 	for (indice = 0; indice < specialites->nb_specialites; ++indice)
 	{
-		if (strcmp(specialites->tab_specialites[indice].nom, *nom_specialite) == 0)
+		if (strcmp(specialites->tab_specialites[indice].nom, nom_specialite) == 0)
 		{
 			break;
 		}
