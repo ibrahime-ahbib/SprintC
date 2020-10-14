@@ -710,7 +710,7 @@ void traite_charge(const Specialites* specialites, const Travailleurs* travaille
 				unsigned int indice_specialite;
 				for (indice_specialite = 0; indice_specialite < MAX_SPECIALITES; ++indice_specialite)
 				{
-					Tache* tache = &commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite];
+					const Tache* tache = &commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite];
 
 					if (tache->indice_travailleur == indice_travailleur && tache->nb_heures_effectuees < tache->nb_heures_requises)
 					{
