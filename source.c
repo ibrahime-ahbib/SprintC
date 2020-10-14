@@ -112,7 +112,7 @@ void get_id(Mot id);
 int get_int();
 
 // Utilitaires
-unsigned int get_indice(const Specialites* specialites, const Mot nom_specialite);
+unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite);
 void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite);
 
 // Instructions
@@ -293,7 +293,7 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 		if (strcmp(travailleurs->tab_travailleurs[i].nom, nom_travailleur) == 0)
 		{
 			exist = VRAI;
-			travailleurs->tab_travailleurs[i].tags_competences[get_indice(specialites, nom_specialite)] = VRAI;
+			travailleurs->tab_travailleurs[i].tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 
 			break;
 		}
@@ -303,7 +303,7 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 	{
 		Travailleur travailleur; // Variable temporaire pour plus de lisibilité
 		strncpy(travailleur.nom, nom_travailleur, LGMOT);
-		travailleur.tags_competences[get_indice(specialites, nom_specialite)] = VRAI;
+		travailleur.tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 
 		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur; // On insère le nouveau travailleur dans le tableau
 	}
@@ -464,7 +464,7 @@ void traite_travailleurs(const Specialites* specialites, Travailleurs* travaille
 	}
 	else
 	{
-		print_travailleurs(travailleurs, nom_specialite, get_indice(specialites, nom_specialite));
+		print_travailleurs(travailleurs, nom_specialite, get_indice_specialite(specialites, nom_specialite));
 	}
 }
 
@@ -603,7 +603,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 /// pour lequel on veut récuperer l'indice.
 /// 
 ///////////////////////////////////////////////// 
-unsigned int get_indice(const Specialites* specialites, const Mot nom_specialite)
+unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite)
 {
 	unsigned int indice;
 	for (indice = 0; indice < specialites->nb_specialites; ++indice)
