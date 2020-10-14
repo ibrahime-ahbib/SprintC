@@ -295,17 +295,15 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 			exist = VRAI;
 			travailleurs->tab_travailleurs[i].tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 
-			break;
+			return;
 		}
 	}
 
 	if (exist == FAUX)
 	{
-		Travailleur travailleur; // Variable temporaire pour plus de lisibilité
-		strncpy(travailleur.nom, nom_travailleur, LGMOT);
-		travailleur.tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
-
-		travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++] = travailleur; // On insère le nouveau travailleur dans le tableau
+		Travailleur* travailleur = &travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++]; // Le nouveau travailleur 
+		strncpy(travailleur->nom, nom_travailleur, LGMOT);
+		travailleur->tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 	}
 }
 
