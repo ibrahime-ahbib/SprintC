@@ -323,7 +323,7 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 
 	Booleen exist = FAUX;
 
-	unsigned int indice_travailleur = 0;
+	unsigned int indice_travailleur;
 	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur)
 	{
 		if (strcmp(travailleurs->tab_travailleurs[indice_travailleur].nom, nom_travailleur) == 0)
@@ -483,7 +483,7 @@ void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
 
-	unsigned int indice_specialite = 0;
+	unsigned int indice_specialite;
 	for (indice_specialite = 0; indice_specialite < specialites->nb_specialites; ++indice_specialite)
 	{
 		if (indice_specialite != 0)
@@ -557,7 +557,7 @@ void traite_client(const Clients* clients, const Commandes* commandes)
 
 	if (strcmp(nom_client, "tous") == 0)
 	{
-		unsigned int indice_client = 0;
+		unsigned int indice_client;
 		for (indice_client = 0; indice_client < clients->nb_clients; ++indice_client)
 		{
 			print_commandes(commandes, clients->tab_clients[indice_client], indice_client);
@@ -583,14 +583,14 @@ void traite_client(const Clients* clients, const Commandes* commandes)
 ///////////////////////////////////////////////// 
 void traite_supervision(const Specialites* specialites, const Commandes* commandes)
 {
-	unsigned int indice_commande = 0;
+	unsigned int indice_commande;
 	for (indice_commande = 0; indice_commande < commandes->nb_commandes; ++indice_commande)
 	{
 		printf(MSG_SUPERVISION, commandes->tab_commandes[indice_commande].nom_commande);
 
 		Booleen first = VRAI;
 		
-		unsigned int indice_specialite = 0;
+		unsigned int indice_specialite;
 		for (indice_specialite = 0; indice_specialite < MAX_SPECIALITES; ++indice_specialite) // Afficher les tâches
 		{
 			if (commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_requises != 0)
@@ -662,7 +662,7 @@ void print_commandes(const Commandes* commandes, const Mot nom_client, const uns
 
 	Booleen first = VRAI;
 
-	unsigned int indice_commande = 0;
+	unsigned int indice_commande;
 	for (indice_commande = 0; indice_commande < commandes->nb_commandes; ++indice_commande) // Afficher les commandes
 	{
 		if (commandes->tab_commandes[indice_commande].idx_client == indice_client)
@@ -703,7 +703,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 
 	Booleen first = VRAI;
 
-	unsigned int indice_travailleur = 0;
+	unsigned int indice_travailleur;
 	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur) // Parcourir tous les travailleurs
 	{
 		if (travailleurs->tab_travailleurs[indice_travailleur].tags_competences[indice_specialite] == VRAI) // S'il possède la spécialité
