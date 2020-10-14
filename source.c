@@ -154,7 +154,7 @@ void traite_developpe(Specialites* specialites);
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs);
 void traite_demarche(Clients* clients);
 void traite_progression(const Specialites* specialites, Commandes* commandes);
-void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_specialite, const unsigned int indice_commande, Commandes* commandes);
+void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_commande, const unsigned int indice_specialite, Commandes* commandes);
 void traite_commande(const Clients* clients, Commandes* commandes);
 void traite_tache(const Specialites* specialites, const Travailleurs* travailleurs, Commandes* commandes);
 void traite_specialites(const Specialites* specialites);
@@ -436,7 +436,7 @@ void traite_tache(const Specialites* specialites, const Travailleurs* travailleu
 	commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite].nb_heures_requises = heures_requises; // Assigner à la tâche le nombre d'heures requises
 	
 	// Affecter la tâche
-	traite_passe(travailleurs, indice_specialite, indice_commande, commandes);
+	traite_passe(travailleurs, indice_commande, indice_specialite, commandes);
 }
 
 /////////////////////////////////////////////////
@@ -472,10 +472,21 @@ void traite_progression(const Specialites* specialites, Commandes* commandes)
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction passe.
 /// 
-/// Réaffecte la tâche.
+/// Affecte la tâche au travailleur avec le 
+/// moins d'heures à son actif.
+/// 
+/// \param travailleurs Pointeur sur la structure
+/// représentant tous les travailleurs.
+/// \param indice_commande L'indice de la
+/// commande qui contient la tâche qu'on veut
+/// affecter.
+/// \param indice_specialite L'indice de la
+/// spécialité de la tâche.
+/// \param commandes Pointeur sur la structure
+/// représentant toutes les commandes.
 /// 
 ///////////////////////////////////////////////// 
-void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_specialite, const unsigned int indice_commande, Commandes* commandes)
+void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_commande, const unsigned int indice_specialite, Commandes* commandes)
 {
 	int minimum = -1; // L'heure total minimum
 	unsigned int best_travailleur = 0; // Le travailleur avec le moins d'heures de travail à effectuer
