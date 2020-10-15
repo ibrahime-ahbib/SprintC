@@ -285,26 +285,20 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 	get_id(nom_travailleur);
 	get_id(nom_specialite);
 
-	Booleen exist = FAUX;
-
 	unsigned int indice_travailleur;
 	for (indice_travailleur = 0; indice_travailleur < travailleurs->nb_travailleurs; ++indice_travailleur)
 	{
 		if (strcmp(travailleurs->tab_travailleurs[indice_travailleur].nom, nom_travailleur) == 0)
 		{
-			exist = VRAI;
 			travailleurs->tab_travailleurs[indice_travailleur].tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 
 			return;
 		}
 	}
 
-	if (exist == FAUX)
-	{
-		Travailleur* travailleur = &travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++]; // Le nouveau travailleur 
-		strncpy(travailleur->nom, nom_travailleur, LGMOT);
-		travailleur->tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
-	}
+	Travailleur* travailleur = &travailleurs->tab_travailleurs[travailleurs->nb_travailleurs++]; // Le nouveau travailleur 
+	strncpy(travailleur->nom, nom_travailleur, LGMOT);
+	travailleur->tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 }
 
 /////////////////////////////////////////////////
