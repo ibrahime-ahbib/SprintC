@@ -1,10 +1,11 @@
 /////////////////////////////////////////////////
 /// \file source.c
 /// 
-/// \brief Le sprint 5 du projet.
+/// \brief Le sprint 6 du projet.
 /// 
-/// Le but de ce sprint est de facturer 
-/// automatiquement les tâches terminées.
+/// Le but de ce sprint est de réaffecter 
+/// automatiquement la tâche si passe est
+/// appellée.
 ///
 /////////////////////////////////////////////////
 
@@ -156,7 +157,7 @@ void print_facture(const Specialites* specialites, const Commandes* commandes, c
 void traite_developpe(Specialites* specialites);
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs);
 void traite_demarche(Clients* clients);
-Booleen traite_progression(const Specialites* specialites, const Clients* clients, Commandes* commandes);
+Booleen traite_progression(const Specialites* specialites, const Clients* clients, Commandes* commandes, Mot nom_commande, Mot nom_specialite);
 void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_commande, const unsigned int indice_specialite, Commandes* commandes);
 void traite_commande(const Clients* clients, Commandes* commandes);
 void traite_tache(const Specialites* specialites, const Travailleurs* travailleurs, Commandes* commandes);
@@ -199,6 +200,10 @@ int main(int argc, char* argv[])
 	Commandes commandes;
 	commandes.nb_commandes = 0;
 
+	// Partagés par passe et progression
+	Mot progression_nom_commande;
+	Mot progression_nom_specialite;
+
 	Mot buffer; // Les instructions principales
 	while (VRAI)
 	{
@@ -230,16 +235,17 @@ int main(int argc, char* argv[])
 		}
 		else if (strcmp(buffer, "progression") == 0)
 		{
-			if (traite_progression(&specialites, &clients, &commandes))
+			if (traite_progression(&specialites, &clients, &commandes, progression_nom_commande, progression_nom_specialite))
 			{
 				break;
 			}
-			
+
 			continue;
 		}
 		else if (strcmp(buffer, "passe") == 0)
 		{
-			// Aucun effet
+			// Passe récupère les indices de la commande et de la spécialité reliées à la tâche
+			traite_passe(&travailleurs, get_indice_commande(&commandes, progression_nom_commande), get_indice_specialite(&specialites, progression_nom_specialite), &commandes);
 			continue;
 		}
 		else if (strcmp(buffer, "specialites") == 0)
@@ -452,14 +458,14 @@ void traite_tache(const Specialites* specialites, const Travailleurs* travailleu
 /// 
 /// \param specialites Pointeur sur la structure
 /// représentant toutes les spécialités.
+/// \param clients Pointeur sur la structure
+/// représentant tous les clients.
 /// \param commandes Pointeur sur la structure 
 /// représentant toutes les commandes.
 /// 
 ///////////////////////////////////////////////// 
-Booleen traite_progression(const Specialites* specialites, const Clients* clients, Commandes* commandes)
+Booleen traite_progression(const Specialites* specialites, const Clients* clients, Commandes* commandes, Mot nom_commande, Mot nom_specialite)
 {
-	Mot nom_commande, nom_specialite;
-
 	get_id(nom_commande);
 	get_id(nom_specialite);
 
