@@ -829,7 +829,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 /// \param commandes Pointeur sur la structure
 /// représentant toutes les commandes.
 /// \param nom_commande Le nom de la commande 
-/// pour lequel on veut récuperer l'indice.
+/// pour laquelle on veut récuperer l'indice.
 /// 
 ///////////////////////////////////////////////// 
 const unsigned int get_indice_commande(const Commandes* commandes, const Mot nom_commandes)
