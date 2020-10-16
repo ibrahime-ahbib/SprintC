@@ -586,7 +586,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 /// \param specialites Pointeur sur la structure
 /// représentant toutes les spécialités.
 /// \param nom_specialite Le nom de la spécialité 
-/// pour lequel on veut récuperer l'indice.
+/// pour laquelle on veut récuperer l'indice.
 /// 
 ///////////////////////////////////////////////// 
 const unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite)
