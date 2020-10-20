@@ -453,16 +453,10 @@ void traite_developpe(Specialites* specialites)
 {
 	assert(specialites->nb_specialites < MAX_SPECIALITES);
 
-	Mot nom_specialite;
-	get_id(nom_specialite);
+	Specialite* specialite = &specialites->tab_specialites[specialites->nb_specialites++]; // La nouvelle specialité 
 
-	int cout_horaire = get_int();
-
-	Specialite specialite;
-	strncpy(specialite.nom, nom_specialite, LGMOT);
-	specialite.cout_horaire = cout_horaire;
-
-	specialites->tab_specialites[specialites->nb_specialites++] = specialite;
+	get_id(specialite->nom);
+	specialite->cout_horaire = get_int();
 }
 
 ///////////////////////////////////////////////// 
