@@ -178,6 +178,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 /// 
 /// \pre Le nombre de specialités ne doit pas 
 /// dépasser le nombre maximal de specialités.
+/// 
 /////////////////////////////////////////////////
 void traite_developpe(Specialites* specialites);
 
@@ -198,6 +199,7 @@ void traite_developpe(Specialites* specialites);
 /// 
 /// \pre Le nombre de travailleurs ne doit pas 
 /// dépasser le nombre maximal de travailleurs.
+/// 
 /////////////////////////////////////////////////
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs);
 
