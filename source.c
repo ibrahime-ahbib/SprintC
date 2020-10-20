@@ -217,27 +217,6 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 void traite_demarche(Clients* clients);
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction progression. 
-///
-/// Récupère le nom de la commande, la spécialité
-/// et le nombre d'heures à ajouter à son 
-/// avancement.
-/// 
-/// Affiche le nombre d'heure réalisée pour une
-/// spécialité d'une commande en particulier.
-/// 
-/////////////////////////////////////////////////
-void traite_progression();
-
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction passe.
-/// 
-/// Réaffecte la tâche.
-/// 
-///////////////////////////////////////////////// 
-void traite_passe();
-
-/////////////////////////////////////////////////
 ///	\brief Traite l'instruction commande.
 /// 
 /// Récupère le nom de la commande et le client.
@@ -260,6 +239,27 @@ void traite_commande();
 /// 
 /////////////////////////////////////////////////
 void traite_tache();
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction progression. 
+///
+/// Récupère le nom de la commande, la spécialité
+/// et le nombre d'heures à ajouter à son 
+/// avancement.
+/// 
+/// Affiche le nombre d'heure réalisée pour une
+/// spécialité d'une commande en particulier.
+/// 
+/////////////////////////////////////////////////
+void traite_progression();
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction passe.
+/// 
+/// Réaffecte la tâche.
+/// 
+///////////////////////////////////////////////// 
+void traite_passe();
 
 /////////////////////////////////////////////////
 ///	\brief Traite l'instruction spécialites.
