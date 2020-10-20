@@ -139,6 +139,8 @@ int get_int();
 /// \param nom_specialite Le nom de la spécialité 
 /// pour laquelle on veut récuperer l'indice.
 /// 
+/// \return Indice de la spécialité.
+/// 
 /// \pre La spécialité doit exister.
 /// 
 ///////////////////////////////////////////////// 
