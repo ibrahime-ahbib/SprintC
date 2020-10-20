@@ -114,7 +114,7 @@ typedef struct
 ///	\brief Récupérer les entrées de 
 /// l'utilisateur.
 /// 
-/// \param id Le mot entrée.
+/// \param[out] id Le mot entrée.
 /// 
 /////////////////////////////////////////////////  
 void get_id(Mot id);
