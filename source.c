@@ -5,15 +5,16 @@
 /// 
 /// Le but de ce sprint est de facturer 
 /// automatiquement les tâches terminées.
-///
+/// 
 /////////////////////////////////////////////////
 
-// Headers 
+// Headers
 /////////////////////////////////////////////////   
 #pragma warning(disable:4996) // Pour désactiver l'erreur concernant scanf
 #include <stdio.h> // Pour l'utilisation de printf et scanf
 #include <stdlib.h> // Pour l'utilisation de atoi
 #include <string.h> // Pour l'utilisation de strcmp et de strncpy
+#include <assert.h> // Pour l'utilisation d'assert
 
 // Messages emis par les instructions
 /////////////////////////////////////////////////   
@@ -140,31 +141,377 @@ typedef struct
 //	Prototypes des fonctions 
 /////////////////////////////////////////////////
 // Lexemes
+
+/////////////////////////////////////////////////
+///	\brief Récupérer les entrées de 
+/// l'utilisateur.
+/// 
+/// \param[out] id Le mot entrée.
+/// 
+/////////////////////////////////////////////////
 void get_id(Mot id);
+
+/////////////////////////////////////////////////
+///	\brief Récupérer l'entrée puis le convertir 
+/// en un entier.
+/// 
+/// \return L'entier récupéré.
+/// 
+/////////////////////////////////////////////////  
 int get_int();
 
 // Utilitaires
+
+/////////////////////////////////////////////////
+///	\brief Récupérer l'indice d'une spécialité
+/// dans le tableau contenant les spécialités.
+/// 
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// \param[in] nom_specialite Le nom de la 
+/// spécialité pour laquelle on veut récuperer 
+/// l'indice.
+///
+/// \return Indice de la spécialité.
+///
+/// \pre La spécialité doit exister.
+/// 
+///////////////////////////////////////////////// 
 const unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite);
+
+/////////////////////////////////////////////////
+///	\brief Récupérer l'indice d'une commande dans
+/// le tableau contenant les commandes.
+/// 
+/// \param[in] commandes Pointeur sur la 
+/// structure représentant toutes les commandes.
+/// \param[in] nom_commande Le nom de la commande 
+/// pour laquelle on veut récuperer l'indice.
+///
+/// \return Indice de la commande.
+///
+/// \pre La commande doit exister.
+/// 
+///////////////////////////////////////////////// 
 const unsigned int get_indice_commande(const Commandes* commandes, const Mot nom_commandes);
+
+/////////////////////////////////////////////////
+///	\brief Récupérer l'indice d'un client dans le
+/// tableau contenant les clients.
+/// 
+/// \param[in] clients Pointeur sur la structure
+/// représentant tous les clients.
+/// \param[in] nom_client Le nom du client pour 
+/// lequel on veut récuperer l'indice.
+///
+/// \return Indice du client.
+///
+/// \pre Le client doit exister.
+/// 
+///////////////////////////////////////////////// 
 const unsigned int get_indice_client(const Clients* clients, const Mot nom_client);
+
+/////////////////////////////////////////////////
+///	\brief Retourne vrai si la commande est
+/// terminée.
+/// 
+/// \param specialites Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param commandes Pointeur sur la structure
+/// représentant toutes les commandes.
+/// \param indice_commande Indice de la commande 
+/// pour laquelle on veut savoir si elle est
+/// terminée.
+/// 
+///////////////////////////////////////////////// 
 Booleen commande_done(const Specialites* specialites, const Commandes* commandes, const unsigned int indice_commande);
+
+/////////////////////////////////////////////////
+///	\brief Afficher les travailleurs possèdant
+/// une compétence en particulier.
+/// 
+/// \param[in] travailleurs Pointeur sur la 
+/// structure représentant tous les travailleurs.
+/// \param[in] nom_specialite Le nom de la 
+/// spécialité pour laquelle on veut afficher les
+/// travailleurs l'exercant.
+/// \param[in] indice_specialite L'indice de la 
+/// spécialité pour laquelle on veut afficher les
+/// travailleurs l'exercant.
+/// 
+///////////////////////////////////////////////// 
 void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite);
+
+/////////////////////////////////////////////////
+///	\brief Afficher les travailleurs possèdant
+/// une compétence en particulier.
+/// 
+/// \param[in] commandes Pointeur sur la 
+/// structure représentant toutes les commandes.
+/// \param[in] nom_client Le nom du client pour  
+/// lequel on veut afficher ses commandes.
+/// \param[in] indice_client L'indice du client 
+/// pour lequel on veut afficher ses commandes.
+/// 
+///////////////////////////////////////////////// 
 void print_commandes(const Commandes* commandes, const Mot nom_client, const unsigned int indice_client);
+
+/////////////////////////////////////////////////
+///	\brief Afficher la facture d'une commande.
+/// 
+/// \param commandes Pointeur sur la structure
+/// représentant toutes les spécialités.
+/// \param commandes Pointeur sur la structure
+/// représentant toutes les commandes.
+/// \param indice_commande L'indice de la
+/// commande pour laquelle on veut afficher la
+/// facture.
+/// 
+/////////////////////////////////////////////////
 void print_facture(const Specialites* specialites, const Commandes* commandes, const unsigned int indice_commande);
 
 // Instructions
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction developpe.
+/// 
+/// Récupère le nom de la spécialité et son coût
+/// horaire.
+/// 
+/// Garde en mémoire la nouvelle spécialité dans
+/// un tableau.
+/// 
+/// \param[out] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// 
+/// \pre Le nombre de specialités ne doit pas 
+/// dépasser le nombre maximal de specialités.
+/// 
+/////////////////////////////////////////////////  
 void traite_developpe(Specialites* specialites);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction embauche.
+/// 
+/// Récupère le nom du travailleur ainsi que 
+/// la specialite dans laquelle il va exercer.
+/// 
+/// Garde en mémoire le nouveau travailleur
+/// dans un tableau. 
+/// 
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// \param[out] travailleurs Pointeur sur la 
+/// structure représentant tous les travailleurs.
+/// 
+/// \pre Le nombre de travailleurs ne doit pas 
+/// dépasser le nombre maximal de travailleurs.
+/// 
+///////////////////////////////////////////////// 
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction demarche.
+/// 
+/// Récupère le nom du client entré.
+/// 
+/// Garde en mémoire le nouveau client dans un 
+/// tableau.
+/// 
+/// \param[out] clients Pointeur sur la structure 
+/// représentant tous les clients.
+/// 
+/// \pre Le nombre de clients ne doit pas
+/// dépasser le nombre maximal de clients.
+/// 
+///////////////////////////////////////////////// 
 void traite_demarche(Clients* clients);
-Booleen traite_progression(const Specialites* specialites, const Clients* clients, Commandes* commandes);
-void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_commande, const unsigned int indice_specialite, Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction commande.
+/// 
+/// Récupère le nom de la commande et le client.
+///
+/// Insère la nouvelle commande dans le tableau
+/// contenant toutes les commandes.
+/// 
+/// \param[in] clients Pointeur sur la structure 
+/// représentant tous les clients.
+/// \param[out] commandes Pointeur sur la  
+/// structure représentant toutes les commandes.
+/// 
+/// \pre Le nombre de commande ne doit pas 
+/// dépasser le nombre maximal de commande.
+/// 
+///////////////////////////////////////////////// 
 void traite_commande(const Clients* clients, Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction tache.
+/// 
+/// Récupère le nom de la commande, sa spécialité
+/// et le nombre d'heures pour effectuer la 
+/// tache.
+/// 
+/// Affecte à la commande une nouvelle tâche en 
+/// indiquant le nombre d'heures requises.
+/// Assigne à cette tâche le travailleur le moins
+/// occupé.
+/// 
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// \param[in] travailleurs Pointeur sur la 
+/// structure représentant tous les travailleurs.
+/// \param[in/out] commandes Pointeur sur la  
+/// structure représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_tache(const Specialites* specialites, const Travailleurs* travailleurs, Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction progression. 
+///
+/// Récupère le nom de la commande, la spécialité
+/// et le nombre d'heures à ajouter à son 
+/// avancement.
+/// 
+/// Met à jour la progression d'une tâche  
+/// en ajoutant des heures effectuées.
+/// 
+/// Affecte un travailleur à la tâche.
+/// 
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// \param[in] clients Pointeur sur la structure
+/// représentant toutes les commandes.
+/// \param[in/out] commandes Pointeur sur la  
+/// structure représentant toutes les commandes.
+/// 
+/// \return Retourne vrai si toutes les commandes
+/// sont terminées.
+/// 
+/// \pre La tâche doit exister.
+/// 
+///////////////////////////////////////////////// 
+Booleen traite_progression(const Specialites* specialites, const Clients* clients, Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction passe.
+/// 
+/// Affecte la tâche au travailleur avec le 
+/// moins d'heures à son actif.
+/// 
+/// \param[in] travailleurs Pointeur sur la 
+/// structure représentant tous les travailleurs.
+/// \param[in] indice_commande L'indice de la
+/// commande qui contient la tâche qu'on veut
+/// affecter.
+/// \param[in] indice_specialite L'indice de la
+/// spécialité de la tâche.
+/// \param[out] commandes Pointeur sur la 
+/// structure représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
+void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_commande, const unsigned int indice_specialite, Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction spécialites.
+/// 
+/// Affiche la liste de toutes les specialités 
+/// existantes.
+/// 
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// 
+/////////////////////////////////////////////////  
 void traite_specialites(const Specialites* specialites);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction travailleurs.
+/// 
+/// Récupère la spécialité pour lequel afficher
+/// ses travailleurs, ou "tous" pour toutes les
+/// spécialités.
+/// 
+/// Affiche la liste de tous les travailleurs 
+/// existants ou tous les travailleurs d'une 
+/// specialité en particulier.
+/// 
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// \param[in] travailleurs Pointeur sur la 
+/// structure représentant tous les travailleurs.
+/// 
+///////////////////////////////////////////////// 
 void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction client.
+/// 
+/// Récupère le nom du client pour lequel 
+/// afficher ses commandes, ou "tous" pour tous 
+/// les clients.
+/// 
+/// Affiche la liste de toutes les commandes 
+/// effectuées par tous les clients ou pour un
+/// client en particulier.
+/// 
+/// \param[in] clients Pointeur sur la structure 
+/// représentant tous les clients.
+/// \param[in] commandes Pointeur sur la 
+/// structure représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_client(const Clients* clients, const Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction supervision.
+/// 
+/// Affiche la progression de toutes les 
+/// commandes.
+/// 
+/// \param[in] specialites Pointeur sur la 
+/// structure représentant toutes les 
+/// spécialités.
+/// \param[in] travailleurs Pointeur sur la 
+/// structure représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_supervision(const Specialites* specialites, const Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction charge.
+/// 
+/// Récupère le nom du travailleur pour lequel on
+/// veut afficher sa charge de travail.
+/// 
+/// Affiche la charge de travail d'un travailleur
+/// donné.
+/// 
+/// \param[in] specialites Pointeur sur la  
+/// structure représentant toutes les 
+/// specialités.
+/// \param[in] travailleurs Pointeur sur la 
+/// structure représentant tous les travailleurs.
+/// \param[in] commandes Pointeur sur la 
+/// structure représentant toutes les commandes.
+/// 
+///////////////////////////////////////////////// 
 void traite_charge(const Specialites* specialites, const Travailleurs* travailleurs, const Commandes* commandes);
+
+/////////////////////////////////////////////////
+///	\brief Traite l'instruction interruption.
+/// 
+/// Met fin au programme.
+/// 
+/////////////////////////////////////////////////  
 void traite_interruption();
 
 /////////////////////////////////////////////////
@@ -173,11 +520,11 @@ void traite_interruption();
 /// Gère les instructions entrées par 
 /// l'utilisateur.
 /// 
-/// \param argc Nombre d'arguments
-/// \param argv Arguments: "echo" permet un retour
-/// à l'écran de ce qu'on écrit via scanf
+/// \param[in] argc Nombre d'arguments.
+/// \param[in] argv Arguments: "echo" permet un 
+/// retour à l'écran de ce qu'on écrit via scanf.
 /// 
-/// \return Etat du programme
+/// \return Etat du programme.
 /// 
 /////////////////////////////////////////////////   
 int main(int argc, char* argv[])
@@ -187,17 +534,10 @@ int main(int argc, char* argv[])
 		EchoActif = VRAI;
 	}
 
-	Specialites specialites;
-	specialites.nb_specialites = 0;
-
-	Travailleurs travailleurs;
-	travailleurs.nb_travailleurs = 0;
-
-	Clients clients;
-	clients.nb_clients = 0;
-
-	Commandes commandes;
-	commandes.nb_commandes = 0;
+	Specialites specialites = { .nb_specialites = 0 };
+	Travailleurs travailleurs = { .nb_travailleurs = 0 };
+	Clients clients = { .nb_clients = 0 };
+	Commandes commandes = { .nb_commandes = 0 };
 
 	Mot buffer; // Les instructions principales
 	while (VRAI)
@@ -234,7 +574,7 @@ int main(int argc, char* argv[])
 			{
 				break;
 			}
-			
+
 			continue;
 		}
 		else if (strcmp(buffer, "passe") == 0)
@@ -281,49 +621,21 @@ int main(int argc, char* argv[])
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction developpe.
-/// 
-/// Récupère le nom de la spécialité et son coût
-/// horaire.
-/// 
-/// Garde en mémoire la nouvelle spécialité dans
-/// un tableau.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// 
-/////////////////////////////////////////////////  
 void traite_developpe(Specialites* specialites)
 {
-	Mot nom_specialite;
-	get_id(nom_specialite);
+	assert(specialites->nb_specialites < MAX_SPECIALITES);
 
-	int cout_horaire = get_int();
+	Specialite* specialite = &specialites->tab_specialites[specialites->nb_specialites++]; // La nouvelle specialité 
 
-	Specialite specialite;
-	strncpy(specialite.nom, nom_specialite, LGMOT);
-	specialite.cout_horaire = cout_horaire;
-
-	specialites->tab_specialites[specialites->nb_specialites++] = specialite;
+	get_id(specialite->nom);
+	specialite->cout_horaire = get_int();
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction embauche.
-/// 
-/// Récupère le nom du travailleur ainsi que 
-/// la specialite dans laquelle il va exercer.
-/// 
-/// Garde en mémoire le nouveau travailleur
-/// dans un tableau. 
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param travailleurs Pointeur sur la structure
-/// représentant tous les travailleurs.
-/// 
-///////////////////////////////////////////////// 
 void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 {
+	assert(travailleurs->nb_travailleurs < MAX_TRAVAILLEURS);
+
 	Mot nom_specialite, nom_travailleur;
 
 	get_id(nom_travailleur);
@@ -345,20 +657,11 @@ void traite_embauche(const Specialites* specialites, Travailleurs* travailleurs)
 	travailleur->tags_competences[get_indice_specialite(specialites, nom_specialite)] = VRAI;
 }
 
-/////////////////////////////////////////////////
-///	\brief Traite l'instruction demarche.
-/// 
-/// Récupère le nom du client entré.
-/// 
-/// Garde en mémoire le nouveau client dans un 
-/// tableau.
-/// 
-/// \param clients Pointeur sur la structure 
-/// représentant tous les clients.
-/// 
 ///////////////////////////////////////////////// 
 void traite_demarche(Clients* clients)
 {
+	assert(clients->nb_clients < MAX_CLIENTS);
+
 	Mot nom_client;
 	get_id(nom_client);
 
@@ -366,21 +669,10 @@ void traite_demarche(Clients* clients)
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction commande.
-/// 
-/// Récupère le nom de la commande et le client.
-///
-/// Insère la nouvelle commande dans le tableau
-/// contenant toutes les commandes.
-/// 
-/// \param clients Pointeur sur la structure 
-/// représentant tous les clients.
-/// \param commandes Pointeur sur la structure 
-/// représentant toutes les commandes.
-/// 
-///////////////////////////////////////////////// 
 void traite_commande(const Clients* clients, Commandes* commandes)
 {
+	assert(commandes->nb_commandes < MAX_COMMANDES);
+	
 	Mot nom_commande, nom_client;
 
 	get_id(nom_commande);
@@ -402,24 +694,6 @@ void traite_commande(const Clients* clients, Commandes* commandes)
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction tache.
-/// 
-/// Récupère le nom de la commande, sa spécialité
-/// et le nombre d'heures pour effectuer la tache.
-/// 
-/// Affecte à la commande une nouvelle tâche en 
-/// indiquant le nombre d'heures requises.
-/// Assigne à cette tâche le travailleur le moins
-/// occupé.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param travailleurs Pointeur sur la structure
-/// représentant tous les travailleurs.
-/// \param commandes Pointeur sur la structure 
-/// représentant toutes les commandes.
-/// 
-///////////////////////////////////////////////// 
 void traite_tache(const Specialites* specialites, const Travailleurs* travailleurs, Commandes* commandes)
 {
 	Mot nom_specialite, nom_commande;
@@ -441,21 +715,6 @@ void traite_tache(const Specialites* specialites, const Travailleurs* travailleu
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction progression. 
-///
-/// Récupère le nom de la commande, la spécialité
-/// et le nombre d'heures à ajouter à son 
-/// avancement.
-/// 
-/// Met à jour la progression d'une tâche  
-/// en ajoutant des heures effectuées.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param commandes Pointeur sur la structure 
-/// représentant toutes les commandes.
-/// 
-///////////////////////////////////////////////// 
 Booleen traite_progression(const Specialites* specialites, const Clients* clients, Commandes* commandes)
 {
 	Mot nom_commande, nom_specialite;
@@ -469,6 +728,9 @@ Booleen traite_progression(const Specialites* specialites, const Clients* client
 	const unsigned int indice_specialite = get_indice_specialite(specialites, nom_specialite);
 
 	Commande* commande = &commandes->tab_commandes[indice_commande];
+
+	assert(commande->taches_par_specialite[indice_specialite].nb_heures_requises != 0); 
+
 	commande->taches_par_specialite[indice_specialite].nb_heures_effectuees += heures_effectuees;
 
 	// Si la tâche est terminée
@@ -532,22 +794,6 @@ Booleen traite_progression(const Specialites* specialites, const Clients* client
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction passe.
-/// 
-/// Affecte la tâche au travailleur avec le 
-/// moins d'heures à son actif.
-/// 
-/// \param travailleurs Pointeur sur la structure
-/// représentant tous les travailleurs.
-/// \param indice_commande L'indice de la
-/// commande qui contient la tâche qu'on veut
-/// affecter.
-/// \param indice_specialite L'indice de la
-/// spécialité de la tâche.
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les commandes.
-/// 
-///////////////////////////////////////////////// 
 void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_commande, const unsigned int indice_specialite, Commandes* commandes)
 {
 	int minimum = -1; // L'heure total minimum
@@ -590,15 +836,6 @@ void traite_passe(const Travailleurs* travailleurs, const unsigned int indice_co
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction spécialites.
-/// 
-/// Affiche la liste de toutes les specialités 
-/// existantes.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// 
-/////////////////////////////////////////////////  
 void traite_specialites(const Specialites* specialites)
 {
 	printf(MSG_SPECIALITES);
@@ -618,22 +855,6 @@ void traite_specialites(const Specialites* specialites)
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction travailleurs.
-/// 
-/// Récupère la spécialité pour lequel afficher
-/// ses travailleurs, ou "tous" pour toutes les
-/// spécialités.
-/// 
-/// Affiche la liste de tous les travailleurs 
-/// existants ou tous les travailleurs d'une 
-/// specialité en particulier.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param travailleurs Pointeur sur la structure
-/// représentant tous les travailleurs.
-/// 
-///////////////////////////////////////////////// 
 void traite_travailleurs(const Specialites* specialites, const Travailleurs* travailleurs)
 {
 	Mot nom_specialite;
@@ -654,22 +875,6 @@ void traite_travailleurs(const Specialites* specialites, const Travailleurs* tra
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction client.
-/// 
-/// Récupère le nom du client pour lequel afficher
-/// ses commandes, ou "tous" pour tous les
-/// clients.
-/// 
-/// Affiche la liste de toutes les commandes 
-/// effectuées par tous les clients ou pour un
-/// client en particulier.
-/// 
-/// \param clients Pointeur sur la structure 
-/// représentant tous les clients.
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les commandes.
-/// 
-///////////////////////////////////////////////// 
 void traite_client(const Clients* clients, const Commandes* commandes)
 {
 	Mot nom_client;
@@ -690,17 +895,6 @@ void traite_client(const Clients* clients, const Commandes* commandes)
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction supervision.
-/// 
-/// Affiche la progression de toutes les 
-/// commandes.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param travailleurs Pointeur sur la structure
-/// représentant toutes les commandes.
-/// 
-///////////////////////////////////////////////// 
 void traite_supervision(const Specialites* specialites, const Commandes* commandes)
 {
 	unsigned int indice_commande;
@@ -736,22 +930,6 @@ void traite_supervision(const Specialites* specialites, const Commandes* command
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction charge.
-/// 
-/// Récupère le nom du travailleur pour lequel on
-/// veut afficher sa charge de travail.
-/// 
-/// Affiche la charge de travail d'un travailleur
-/// donné.
-/// 
-/// \param specialites Pointeur sur la structure 
-/// représentant toutes les specialités.
-/// \param travailleurs Pointeur sur la structure
-/// représentant tous les travailleurs.
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les commandes.
-/// 
-///////////////////////////////////////////////// 
 void traite_charge(const Specialites* specialites, const Travailleurs* travailleurs, const Commandes* commandes)
 {
 	Mot nom_travailleur;
@@ -800,27 +978,11 @@ void traite_charge(const Specialites* specialites, const Travailleurs* travaille
 }
 
 /////////////////////////////////////////////////
-///	\brief Traite l'instruction interruption.
-/// 
-/// Met fin au programme.
-/// 
-/////////////////////////////////////////////////  
 void traite_interruption()
 {
 	printf(MSG_INTERRUPTION);
 }
 
-/////////////////////////////////////////////////
-///	\brief Afficher la facture d'une commande.
-/// 
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les commandes.
-/// \param indice_commande L'indice de la
-/// commande pour laquelle on veut afficher la
-/// facture.
-/// 
 /////////////////////////////////////////////////
 void print_facture(const Specialites* specialites, const Commandes* commandes, const unsigned int indice_commande)
 {
@@ -851,17 +1013,6 @@ void print_facture(const Specialites* specialites, const Commandes* commandes, c
 }
 
 /////////////////////////////////////////////////
-///	\brief Afficher les travailleurs possèdant
-/// une compétence en particulier.
-/// 
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les commandes.
-/// \param nom_client Le nom du client pour  
-/// lequel on veut afficher ses commandes.
-/// \param indice_client L'indice du client pour
-/// lequel on veut afficher ses commandes.
-/// 
-///////////////////////////////////////////////// 
 void print_commandes(const Commandes* commandes, const Mot nom_client, const unsigned int indice_client)
 {
 	printf(MSG_CLIENT, nom_client);
@@ -890,19 +1041,6 @@ void print_commandes(const Commandes* commandes, const Mot nom_client, const uns
 }
 
 /////////////////////////////////////////////////
-///	\brief Afficher les travailleurs possèdant
-/// une compétence en particulier.
-/// 
-/// \param travailleurs Pointeur sur la structure
-/// représentant tous les travailleurs.
-/// \param nom_specialite Le nom de la spécialité 
-/// pour laquelle on veut afficher les
-/// travailleurs l'exercant.
-/// \param indice_specialite L'indice de la 
-/// spécialité pour laquelle on veut afficher les
-/// travailleurs l'exercant.
-/// 
-///////////////////////////////////////////////// 
 void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_specialite, const unsigned int indice_specialite)
 {
 	printf(MSG_TRAVAILLEURS, nom_specialite);
@@ -930,18 +1068,6 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 	printf("\n");
 }
 
-/////////////////////////////////////////////////
-///	\brief Retourne vrai si la commande est
-/// terminée.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les commandes.
-/// \param indice_commande Indice de la commande 
-/// pour laquelle on veut savoir si elle est
-/// terminée.
-/// 
 ///////////////////////////////////////////////// 
 Booleen commande_done(const Specialites* specialites, const Commandes* commandes, const unsigned int indice_commande)
 {
@@ -959,83 +1085,66 @@ Booleen commande_done(const Specialites* specialites, const Commandes* commandes
 	return VRAI;
 }
 
-/////////////////////////////////////////////////
-///	\brief Récupérer l'indice d'une spécialité
-/// dans le tableau contenant les spécialités.
-/// 
-/// \param commandes Pointeur sur la structure
-/// représentant toutes les commandes.
-/// \param nom_commande Le nom de la commande 
-/// pour laquelle on veut récuperer l'indice.
-/// 
 ///////////////////////////////////////////////// 
 const unsigned int get_indice_commande(const Commandes* commandes, const Mot nom_commandes)
 {
+	Booleen exist = FAUX;
+
 	unsigned int indice;
 	for (indice = 0; indice < commandes->nb_commandes; ++indice)
 	{
 		if (strcmp(commandes->tab_commandes[indice].nom_commande, nom_commandes) == 0)
 		{
+			exist = VRAI;
 			break;
 		}
 	}
 
+	assert(exist);
+
 	return indice;
 }
 
-/////////////////////////////////////////////////
-///	\brief Récupérer l'indice d'une spécialité
-/// dans le tableau contenant les spécialités.
-/// 
-/// \param clients Pointeur sur la structure
-/// représentant tous les clients.
-/// \param nom_client Le nom du client pour 
-/// lequel on veut récuperer l'indice.
-/// 
 ///////////////////////////////////////////////// 
 const unsigned int get_indice_client(const Clients* clients, const Mot nom_client)
 {
+	Booleen exist = FAUX;
+
 	unsigned int indice;
 	for (indice = 0; indice < clients->nb_clients; ++indice)
 	{
 		if (strcmp(clients->tab_clients[indice], nom_client) == 0)
 		{
+			exist = VRAI;
 			break;
 		}
 	}
 
+	assert(exist);
+
 	return indice;
 }
 
-/////////////////////////////////////////////////
-///	\brief Récupérer l'indice d'une spécialité
-/// dans le tableau contenant les spécialités.
-/// 
-/// \param specialites Pointeur sur la structure
-/// représentant toutes les spécialités.
-/// \param nom_specialite Le nom de la spécialité 
-/// pour lequel on veut récuperer l'indice.
-/// 
 ///////////////////////////////////////////////// 
 const unsigned int get_indice_specialite(const Specialites* specialites, const Mot nom_specialite)
 {
+	Booleen exist = FAUX;
+
 	unsigned int indice;
 	for (indice = 0; indice < specialites->nb_specialites; ++indice)
 	{
 		if (strcmp(specialites->tab_specialites[indice].nom, nom_specialite) == 0)
 		{
+			exist = VRAI;
 			break;
 		}
 	}
 
+	assert(exist);
+
 	return indice;
 }
 
-/////////////////////////////////////////////////
-///	\brief Récupérer les entrées de l'utilisateur.
-/// 
-/// \param id Le mot entrée
-/// 
 /////////////////////////////////////////////////   
 void get_id(Mot id)
 {
@@ -1047,12 +1156,6 @@ void get_id(Mot id)
 	}
 }
 
-/////////////////////////////////////////////////
-///	\brief Récupérer l'entrée puis le convertir 
-/// en un entier.
-/// 
-/// \return L'entier récupéré
-/// 
 /////////////////////////////////////////////////  
 int get_int()
 {
