@@ -147,7 +147,10 @@ typedef struct
 ///	\brief Récupérer les entrées de 
 /// l'utilisateur.
 /// 
-/// \param[out] id Le mot entrée.
+/// \param[out] id Le mot entré.
+/// 
+/// \pre La taille du mot entré ne doit pas 
+/// dépasser la taille maximal d'un mot.
 /// 
 /////////////////////////////////////////////////
 void get_id(Mot id);
@@ -157,6 +160,9 @@ void get_id(Mot id);
 /// en un entier.
 /// 
 /// \return L'entier récupéré.
+/// 
+/// \pre La taille du mot entré ne doit pas 
+/// dépasser la taille maximal d'un mot.
 /// 
 /////////////////////////////////////////////////  
 int get_int();
@@ -790,7 +796,7 @@ Booleen traite_progression(const Specialites* specialites, const Clients* client
 				printf("%s:%d", clients->tab_clients[indice_client], total_client);
 			}
 
-			printf("\n");
+			//printf("\n");
 
 			return VRAI;
 		}
@@ -1078,7 +1084,7 @@ void print_travailleurs(const Travailleurs* travailleurs, const Mot nom_speciali
 Booleen commande_done(const Specialites* specialites, const Commandes* commandes, const unsigned int indice_commande)
 {
 	unsigned int indice_specialite;
-	for (indice_specialite = 0; indice_specialite < commandes->nb_commandes; ++indice_specialite)
+	for (indice_specialite = 0; indice_specialite < specialites->nb_specialites; ++indice_specialite)
 	{
 		const Tache* tache = &commandes->tab_commandes[indice_commande].taches_par_specialite[indice_specialite];
 
@@ -1156,6 +1162,8 @@ void get_id(Mot id)
 {
 	scanf("%s", id);
 
+	assert(strlen(id) <= LGMOT);
+
 	if (EchoActif)
 	{
 		printf(">>echo %s\n", id);
@@ -1167,6 +1175,8 @@ int get_int()
 {
 	char buffer[NBCHIFFREMAX + 1];
 	scanf("%s", buffer);
+
+	assert(strlen(buffer) <= LGMOT);
 
 	if (EchoActif)
 	{
