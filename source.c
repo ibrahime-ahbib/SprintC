@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////
 /// \file source.c
-/// 
+/// \author AHBIB Ibrahime & KILIC Fatih
 /// \brief Le sprint 6 du projet.
 /// 
 /// Le but de ce sprint est de réaffecter 
@@ -643,6 +643,7 @@ void traite_developpe(Specialites* specialites)
 
 	get_id(specialite->nom);
 	specialite->cout_horaire = get_int();
+	assert(specialite->cout_horaire > 0);
 }
 
 /////////////////////////////////////////////////
@@ -735,7 +736,8 @@ Booleen traite_progression(const Specialites* specialites, const Clients* client
 	get_id(nom_specialite);
 
 	int heures_effectuees = get_int();
-
+	assert(heures_effectuees > 0);
+	
 	unsigned int indice_commande = get_indice_commande(commandes, nom_commande);
 	const unsigned int indice_specialite = get_indice_specialite(specialites, nom_specialite);
 
